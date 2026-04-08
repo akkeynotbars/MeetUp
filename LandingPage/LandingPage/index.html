@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MeetUp AI - Smart Recruitment</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="logo"><i class="fas fa-people-arrows"></i> Meet<span>Up</span></div>
+  <ul class="nav-links">
+    <li><a href="#home">Home</a></li>
+    <li><a href="#intro">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#partners">Partners</a></li>
+  </ul>
+  <div class="nav-auth">
+    <a href="login.html" class="nav-login">Log In</a>
+    <a href="signup.html" class="nav-cta">Get Started <i class="fas fa-arrow-right"></i></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+
+  <!-- LEFT: Scene -->
+  <div class="scene-wrap">
+    <div class="scene">
+      <div class="particles" id="particles"></div>
+
+      <!-- Floating laptop -->
+      <div class="laptop">
+        <div class="laptop-screen">
+          <div class="screen-content">
+            <div class="screen-topbar">
+              <span class="screen-dot red"></span>
+              <span class="screen-dot yellow"></span>
+              <span class="screen-dot green"></span>
+            </div>
+            <div class="screen-lines">
+              <div class="s-line"></div>
+              <div class="s-line"></div>
+              <div class="s-line"></div>
+              <div class="s-line accent"></div>
+              <div class="s-line"></div>
+              <div class="s-line short"></div>
+            </div>
+          </div>
+        </div>
+        <div class="laptop-base"></div>
+        <div class="laptop-shadow"></div>
+      </div>
+
+      <!-- Orbiting icons -->
+      <div class="orbit">
+        <div class="orbit-icon o1" data-title="Resume AI" data-desc="Upload & analyze your resume instantly with AI scoring and improvement tips." onclick="showIconInfo(this)"><i class="fas fa-file-alt"></i></div>
+        <div class="orbit-icon o2" data-title="Smart Matching" data-desc="AI matches you with jobs based on skills, experience, and culture fit." onclick="showIconInfo(this)"><i class="fas fa-brain"></i></div>
+        <div class="orbit-icon o3" data-title="Job Market" data-desc="Browse thousands of curated job listings from top companies." onclick="showIconInfo(this)"><i class="fas fa-briefcase"></i></div>
+        <div class="orbit-icon o4" data-title="Skill Coaching" data-desc="Personalized learning paths to close your skill gaps and grow." onclick="showIconInfo(this)"><i class="fas fa-chart-line"></i></div>
+        <div class="orbit-icon o5" data-title="AI Interview" data-desc="Practice mock interviews with real-time feedback on your answers." onclick="showIconInfo(this)"><i class="fas fa-comments"></i></div>
+        <div class="orbit-icon o6" data-title="Grade Verification" data-desc="Verify your skill level with AI assessment and earn badges." onclick="showIconInfo(this)"><i class="fas fa-award"></i></div>
+      </div>
+      <!-- Icon info popup -->
+      <div class="icon-popup" id="iconPopup">
+        <div class="icon-popup-title" id="popupTitle"></div>
+        <div class="icon-popup-desc" id="popupDesc"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Content -->
+  <div class="hero-right">
+    <div class="hero-badge"><i class="fas fa-bolt"></i> AI-Powered Recruitment</div>
+    <h1 class="hero-title">Find Your<br><em>Perfect Match</em><br>With AI</h1>
+
+    <div class="qa-stack" id="qaStack">
+      <div class="qa-card" id="card1">
+        <div class="qa-q"><span class="dot"></span>Upload Your Resume</div>
+        <div class="qa-a">AI instantly analyzes your skills, experience, and career trajectory to create a comprehensive professional profile.</div>
+        <span class="qa-tag">Resume AI</span>
+      </div>
+      <div class="qa-card" id="card2">
+        <div class="qa-q"><span class="dot"></span>Get Matched Instantly</div>
+        <div class="qa-a">Our algorithm matches you with roles where you'll thrive — going beyond keywords to understand context and fit.<span class="typing-cursor"></span></div>
+        <span class="qa-tag">Smart Matching</span>
+      </div>
+      <div class="qa-card" id="card3">
+        <div class="qa-q"><span class="dot"></span>Ace Your Interview</div>
+        <div class="qa-a">Practice with an AI interviewer that gives real-time feedback on clarity, confidence, and relevance.</div>
+        <span class="qa-tag">Interview Coach</span>
+      </div>
+    </div>
+
+    <div class="hero-ctas">
+      <a href="signup.html" class="btn-primary">Start Practicing Free</a>
+      <a href="#features" class="btn-ghost">Explore Features <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Scroll
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INTRO -->
+<section class="intro" id="intro">
+  <div class="intro-visual">
+    <div class="stat-grid">
+      <div class="stat-cell"><div class="stat-num">95%</div><div class="stat-lbl">Match Accuracy</div></div>
+      <div class="stat-cell"><div class="stat-num">10K+</div><div class="stat-lbl">Jobs Posted</div></div>
+      <div class="stat-cell"><div class="stat-num">3.5x</div><div class="stat-lbl">Faster Hiring</div></div>
+      <div class="stat-cell"><div class="stat-num">50K+</div><div class="stat-lbl">Active Users</div></div>
+    </div>
+  </div>
+  <div class="intro-content">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">The Smartest Way to<br>Navigate Your Career</h2>
+    <p class="section-desc">
+      MeetUp brings together AI-powered resume analysis, intelligent job matching, verified skill assessments, and real-time interview coaching — all in one seamless platform designed for both job seekers and employers.
+    </p>
+    <div class="tag-row">
+      <span class="tag">Resume Analysis</span>
+      <span class="tag">AI Matching</span>
+      <span class="tag">Skill Verification</span>
+      <span class="tag">Interview Coach</span>
+      <span class="tag">Career Coaching</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-header">
+    <div class="section-label">Our Features</div>
+    <h2 class="section-title">Everything You Need<br>to Get Hired</h2>
+    <p class="section-desc">Eight AI-powered modules working together to give you an unfair advantage in the job market.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card large" style="background: linear-gradient(135deg, #151018, #1a1020);">
+      <div class="feat-pill">Core</div>
+      <div class="feat-icon" style="background:rgba(247,148,77,0.15);"><i class="fas fa-robot"></i></div>
+      <h3>AI Resume Analyzer</h3>
+      <p>Upload your resume and get instant, in-depth analysis. Our AI scores your resume, identifies skill gaps, and suggests powerful improvements — with ATS optimization built in.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(247,148,77,0.12);"><i class="fas fa-bullseye"></i></div>
+      <h3>Smart Job Matching</h3>
+      <p>Go beyond keywords. Our algorithm understands context and culture to match you with roles where you'll genuinely thrive.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(100,200,150,0.1);"><i class="fas fa-check-circle"></i></div>
+      <h3>Skill Verification</h3>
+      <p>Dynamic questions verify the skills you claim. Earn verified badges that boost your profile credibility with employers.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(160,120,220,0.1);"><i class="fas fa-comments"></i></div>
+      <h3>AI Interview Coach</h3>
+      <p>Practice with an AI interviewer that adapts to your target role, gives live feedback, and tracks your improvement over time.</p>
+    </div>
+
+    <div class="feat-card large" style="background: linear-gradient(135deg, #1a1508, #12100a);">
+      <div class="feat-pill">For Companies</div>
+      <div class="feat-icon" style="background:rgba(247,148,77,0.1);"><i class="fas fa-building"></i></div>
+      <h3>Company Candidate Portal</h3>
+      <p>Post jobs, access a curated pool of verified candidates, review AI-generated assessments, and streamline your entire hiring pipeline — from application to offer letter — in one dashboard built for modern recruitment teams.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(74,160,220,0.12);"><i class="fas fa-chart-line"></i></div>
+      <h3>Skill Coaching</h3>
+      <p>Personalized learning paths built from your skill gaps, with curated resources and milestone tracking.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(220,100,80,0.1);"><i class="fas fa-bell"></i></div>
+      <h3>Smart Notifications</h3>
+      <p>Get notified when matching jobs open, when companies view your profile, or when it's time to follow up.</p>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon" style="background:rgba(80,200,180,0.1);"><i class="fas fa-chart-bar"></i></div>
+      <h3>Analytics Dashboard</h3>
+      <p>Understand your market positioning, track application outcomes, and visualize your career growth over time.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PARTNERS -->
+<section class="partners" id="partners">
+  <div class="partners-header">
+    <div class="section-label" style="justify-content:center;">Our Partners</div>
+    <h2 class="section-title" style="text-align:center;">Trusted by Leading Companies</h2>
+    <p class="section-desc" style="margin:0 auto;text-align:center;">Organizations that believe in empowering the next generation of talent.</p>
+  </div>
+
+  <div class="logos-row">
+    <div class="logo-chip">Google</div>
+    <div class="logo-chip">Tokopedia</div>
+    <div class="logo-chip">Gojek</div>
+    <div class="logo-chip">Shopee</div>
+    <div class="logo-chip">Grab</div>
+    <div class="logo-chip">Bukalapak</div>
+    <div class="logo-chip">Traveloka</div>
+  </div>
+
+  <div class="partner-cta-box">
+    <h3>Become a Partner</h3>
+    <p>Partner with MeetUp to connect with thousands of motivated, skilled job seekers and help shape the future of hiring.</p>
+    <a href="#" class="btn-outline">Apply for Partnership <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <span class="logo"><i class="fas fa-people-arrows"></i> Meet<span>Up</span></span>
+      <p>AI-powered recruitment platform connecting talented individuals with their ideal opportunities.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Job Seekers</a></li>
+        <li><a href="#">For Companies</a></li>
+        <li><a href="#">Skill Assessments</a></li>
+        <li><a href="#">Interview Prep</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Our Team</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Cookie Policy</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 MeetUp. All rights reserved.</span>
+    <div class="social-row">
+      <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+      <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+      <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+      <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
