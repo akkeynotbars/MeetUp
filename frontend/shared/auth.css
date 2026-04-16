@@ -1,0 +1,272 @@
+/* ══════════════════════════════════════
+   MEETUP — SHARED AUTH STYLES
+   Used by: login.html, signup.html
+   ══════════════════════════════════════ */
+
+:root {
+  --bg: #0a0c10;
+  --surface: #111318;
+  --surface2: #1a1d26;
+  --orange: #f7944d;
+  --orange-light: #ffb574;
+  --orange-glow: rgba(247, 148, 77, 0.25);
+  --text: #e8e4dc;
+  --muted: #7a7670;
+  --accent: #4a9fd4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* Ambient glows (position customized per-page with body::before/::after overrides) */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(30px, 20px); }
+}
+
+/* Nav */
+nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 5vw;
+  background: linear-gradient(to bottom, rgba(10, 12, 16, 0.95), transparent);
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--orange-light);
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+.logo i { margin-right: 0.3rem; font-size: 1.1rem; }
+.logo span { color: var(--text); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--orange-light); }
+
+.nav-cta {
+  background: var(--orange);
+  color: #0a0c10;
+  padding: 0.5rem 1.3rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.nav-cta:hover { background: var(--orange-light); transform: translateY(-1px); }
+
+/* Main */
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: fadeUp 0.6s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.card-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 0.4rem;
+}
+.card-header p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* Inputs */
+.input-group { margin-bottom: 1.2rem; }
+.input-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.3px;
+}
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: 0.3s;
+  -webkit-appearance: none;
+}
+.input-group input::placeholder { color: #4a4640; }
+.input-group input:focus,
+.input-group select:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(247, 148, 77, 0.1);
+}
+.input-group select { cursor: pointer; }
+.input-group select option {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* Password show/hide */
+.pass-wrapper { position: relative; }
+.show-pass {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--orange);
+  font-weight: 500;
+  transition: 0.2s;
+}
+.show-pass:hover { color: var(--orange-light); }
+
+/* CAPTCHA */
+.captcha-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.2rem;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+.captcha-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.captcha-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--orange);
+}
+.captcha-badge {
+  font-size: 0.68rem;
+  color: #4a4640;
+  font-style: italic;
+}
+
+/* Primary auth button (used by both login & signup) */
+.auth-btn {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--orange), #d4752f);
+  color: #0a0c10;
+  border: none;
+  border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 20px var(--orange-glow);
+}
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(247, 148, 77, 0.4);
+}
+
+/* Card footer links */
+.card-footer {
+  text-align: center;
+  margin-top: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.card-footer a {
+  color: var(--orange-light);
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s;
+}
+.card-footer a:hover {
+  color: var(--orange);
+  text-decoration: underline;
+}
+
+/* Floating particles */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: var(--orange);
+  border-radius: 50%;
+  animation: floatUp linear infinite;
+  opacity: 0;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) translateX(0);     opacity: 0; }
+  20%  {                                              opacity: 0.4; }
+  80%  {                                              opacity: 0.15; }
+  100% { transform: translateY(-200px) translateX(15px); opacity: 0; }
+}

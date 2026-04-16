@@ -1,217 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - MeetUp</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0a0c10;
-  --surface: #111318;
-  --surface2: #1a1d26;
-  --orange: #f7944d;
-  --orange-light: #ffb574;
-  --orange-glow: rgba(247,148,77,0.25);
-  --text: #e8e4dc;
-  --muted: #7a7670;
-  --accent: #4a9fd4;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — MeetUp</title>
 
-* { margin:0; padding:0; box-sizing:border-box; }
+  <!-- Shared auth styles -->
+  <link rel="stylesheet" href="../shared/auth.css">
 
-body {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  background: var(--bg);
-  font-family: 'DM Sans', sans-serif;
-  color: var(--text);
-  overflow-x: hidden;
-}
+  <!-- External -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-/* Ambient glows */
-body::before, body::after {
-  content: ""; position: fixed; border-radius: 50%;
-  filter: blur(100px); pointer-events: none; z-index: 0;
-}
-body::before {
-  width: 400px; height: 400px; top: -150px; left: -100px;
-  background: rgba(247,148,77,0.08);
-  animation: drift 8s ease-in-out infinite alternate;
-}
-body::after {
-  width: 350px; height: 350px; bottom: -100px; right: -80px;
-  background: rgba(74,159,212,0.06);
-  animation: drift 8s 2s ease-in-out infinite alternate;
-}
-@keyframes drift {
-  from { transform: translate(0,0); }
-  to { transform: translate(30px, 20px); }
-}
+  <!-- Page-specific styles (login only) -->
+  <style>
+    /* Ambient glow positions for the login page */
+    body::before {
+      width: 400px; height: 400px; top: -150px; left: -100px;
+      background: rgba(247, 148, 77, 0.08);
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    body::after {
+      width: 350px; height: 350px; bottom: -100px; right: -80px;
+      background: rgba(74, 159, 212, 0.06);
+      animation: drift 8s 2s ease-in-out infinite alternate;
+    }
 
-/* Nav */
-nav {
-  position: relative; z-index: 10;
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.2rem 5vw;
-  background: linear-gradient(to bottom, rgba(10,12,16,0.95), transparent);
-}
-.logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem; font-weight: 900;
-  color: var(--orange-light); text-decoration: none;
-  letter-spacing: -0.5px;
-}
-.logo i { margin-right: 0.3rem; font-size: 1.1rem; }
-.logo span { color: var(--text); }
-.nav-links { display: flex; align-items: center; gap: 1.5rem; }
-.nav-links a {
-  color: var(--muted); text-decoration: none;
-  font-size: 0.9rem; font-weight: 500; transition: color 0.3s;
-}
-.nav-links a:hover { color: var(--orange-light); }
-.nav-cta {
-  background: var(--orange); color: #0a0c10;
-  padding: 0.5rem 1.3rem; border-radius: 50px;
-  font-weight: 600; font-size: 0.85rem;
-  text-decoration: none; transition: all 0.3s;
-}
-.nav-cta:hover { background: var(--orange-light); transform: translateY(-1px); }
+    /* Login card */
+    .card { width: 420px; }
 
-/* Main */
-.main {
-  flex: 1; display: flex; justify-content: center; align-items: center;
-  padding: 2rem; position: relative; z-index: 1;
-}
-
-/* Card */
-.card {
-  background: var(--surface);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 20px;
-  padding: 3rem;
-  width: 420px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  animation: fadeUp 0.6s ease both;
-}
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(20px); }
-  to { opacity:1; transform:translateY(0); }
-}
-
-.card-header { text-align: center; margin-bottom: 2rem; }
-.card-header h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem; font-weight: 900;
-  margin-bottom: 0.4rem;
-}
-.card-header p { color: var(--muted); font-size: 0.9rem; }
-
-/* Inputs */
-.input-group { margin-bottom: 1.2rem; }
-.input-group label {
-  display: block; font-size: 0.82rem; font-weight: 500;
-  color: var(--muted); margin-bottom: 0.4rem;
-  letter-spacing: 0.3px;
-}
-.input-group input {
-  width: 100%; padding: 0.8rem 1rem;
-  background: var(--surface2);
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: 12px; color: var(--text);
-  font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
-  outline: none; transition: 0.3s;
-}
-.input-group input::placeholder { color: #4a4640; }
-.input-group input:focus {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(247,148,77,0.1);
-}
-.pass-wrapper { position: relative; }
-.show-pass {
-  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-  cursor: pointer; font-size: 0.78rem; color: var(--orange);
-  font-weight: 500; transition: 0.2s;
-}
-.show-pass:hover { color: var(--orange-light); }
-
-/* Role Selector */
-.role-selector {
-  display: flex; gap: 0; margin-bottom: 1.2rem;
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: 12px; overflow: hidden;
-}
-.role-tab {
-  flex: 1; text-align: center; padding: 0.7rem;
-  font-size: 0.85rem; font-weight: 500;
-  color: var(--muted); cursor: pointer;
-  background: var(--surface2); transition: 0.3s;
-}
-.role-tab:first-child { border-right: 1px solid rgba(255,255,255,0.06); }
-.role-tab.active {
-  background: linear-gradient(135deg, var(--orange), #d4752f);
-  color: #0a0c10; font-weight: 600;
-}
-.role-tab:hover:not(.active) { background: rgba(247,148,77,0.06); color: var(--text); }
-
-/* CAPTCHA */
-.captcha-box {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0.7rem 1rem; margin-bottom: 1.2rem;
-  background: var(--surface2);
-  border: 1.5px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
-}
-.captcha-label {
-  display: flex; align-items: center; gap: 0.6rem;
-  font-size: 0.85rem; color: var(--muted); cursor: pointer;
-}
-.captcha-label input[type="checkbox"] {
-  width: 18px; height: 18px; accent-color: var(--orange);
-}
-.captcha-badge { font-size: 0.68rem; color: #4a4640; font-style: italic; }
-
-/* Button */
-.login-btn {
-  width: 100%; padding: 0.85rem;
-  background: linear-gradient(135deg, var(--orange), #d4752f);
-  color: #0a0c10; border: none; border-radius: 50px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.95rem; font-weight: 700;
-  cursor: pointer; transition: all 0.3s;
-  box-shadow: 0 4px 20px var(--orange-glow);
-}
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(247,148,77,0.4);
-}
-
-/* Footer links */
-.card-footer {
-  text-align: center; margin-top: 1.2rem;
-  font-size: 0.85rem; color: var(--muted);
-}
-.card-footer a {
-  color: var(--orange-light); text-decoration: none;
-  font-weight: 500; transition: 0.2s;
-}
-.card-footer a:hover { color: var(--orange); text-decoration: underline; }
-
-/* Floating particles */
-.particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-.particle {
-  position: absolute; width: 2px; height: 2px;
-  background: var(--orange); border-radius: 50%;
-  animation: floatUp linear infinite; opacity: 0;
-}
-@keyframes floatUp {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  20% { opacity: 0.4; }
-  80% { opacity: 0.15; }
-  100% { transform: translateY(-200px) translateX(15px); opacity: 0; }
-}
-</style>
+    /* Role selector (segmented tabs) */
+    .role-selector {
+      display: flex;
+      margin-bottom: 1.2rem;
+      border: 1.5px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.7rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      background: var(--surface2);
+      transition: 0.3s;
+    }
+    .role-tab:first-child { border-right: 1px solid rgba(255, 255, 255, 0.06); }
+    .role-tab.active {
+      background: linear-gradient(135deg, var(--orange), #d4752f);
+      color: #0a0c10;
+      font-weight: 600;
+    }
+    .role-tab:hover:not(.active) {
+      background: rgba(247, 148, 77, 0.06);
+      color: var(--text);
+    }
+  </style>
 </head>
 <body>
 
@@ -259,7 +106,7 @@ nav {
         <span class="captcha-badge">reCAPTCHA</span>
       </div>
 
-      <button class="login-btn" id="loginBtn">Login</button>
+      <button class="auth-btn" id="loginBtn">Login</button>
     </form>
 
     <div class="card-footer">
@@ -271,61 +118,53 @@ nav {
   </div>
 </div>
 
+<!-- Shared helpers (particles + password toggle) -->
+<script src="../shared/auth.js"></script>
+
 <script>
-// Particles
-const pc = document.getElementById('particles');
-for (let i = 0; i < 12; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.left = (Math.random() * 100) + '%';
-  p.style.top = (60 + Math.random() * 40) + '%';
-  p.style.animationDuration = (5 + Math.random() * 7) + 's';
-  p.style.animationDelay = (Math.random() * 5) + 's';
-  pc.appendChild(p);
-}
+  // Spawn floating particles
+  spawnParticles('particles', 12);
 
-var loginRole = 'user';
+  let loginRole = 'user';
 
-// Show/Hide password
-document.getElementById('showPassBtn').addEventListener('click', function() {
-  var pass = document.getElementById('password');
-  if (pass.type === 'password') { pass.type = 'text'; this.textContent = 'Hide'; }
-  else { pass.type = 'password'; this.textContent = 'Show'; }
-});
-
-// Role selector
-document.querySelectorAll('.role-tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    loginRole = this.dataset.role;
-    document.querySelectorAll('.role-tab').forEach(function(t) { t.classList.remove('active'); });
-    this.classList.add('active');
+  // Show/hide password
+  document.getElementById('showPassBtn').addEventListener('click', function () {
+    togglePasswordVisibility(this, 'password');
   });
-});
 
-// Forgot password
-document.getElementById('forgotLink').addEventListener('click', function(e) {
-  e.preventDefault();
-  alert('Password reset link sent to your email!');
-});
+  // Role selector
+  document.querySelectorAll('.role-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      loginRole = this.dataset.role;
+      document.querySelectorAll('.role-tab').forEach(function (t) { t.classList.remove('active'); });
+      this.classList.add('active');
+    });
+  });
 
-// Login
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  var btn = document.getElementById('loginBtn');
-  btn.innerText = 'Logging in...';
-  btn.style.opacity = '0.7';
-  setTimeout(function() {
-    btn.innerText = 'Success!';
-    btn.style.background = '#27c93f';
-    setTimeout(function() {
-      if (loginRole === 'company') {
-        window.location.href = '../CompanyDashboard/dashboard.html';
-      } else {
-        window.location.href = '../UserDashboard/dashboard.html';
-      }
-    }, 800);
-  }, 1200);
-});
+  // Forgot password (placeholder — real flow in Week 2)
+  document.getElementById('forgotLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    alert('Password reset link sent to your email!');
+  });
+
+  // Login (placeholder — hooked up to backend in Week 2)
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const btn = document.getElementById('loginBtn');
+    btn.innerText = 'Logging in...';
+    btn.style.opacity = '0.7';
+    setTimeout(function () {
+      btn.innerText = 'Success!';
+      btn.style.background = '#27c93f';
+      setTimeout(function () {
+        if (loginRole === 'company') {
+          window.location.href = '../CompanyDashboard/dashboard.html';
+        } else {
+          window.location.href = '../UserDashboard/dashboard.html';
+        }
+      }, 800);
+    }, 1200);
+  });
 </script>
 </body>
 </html>
