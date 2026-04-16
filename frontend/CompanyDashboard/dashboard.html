@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetUp — Company Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <div class="dashboard-layout">
+
+      <!-- ======= SIDEBAR ======= -->
+      <aside class="sidebar">
+        <div class="platform-name">
+          <i class="fas fa-bolt"></i> MeetUp Talent
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item active" data-page="dashboardPage"><i class="fas fa-th-large"></i> Dashboard</button>
+          <button class="nav-item" data-page="postJobPage"><i class="fas fa-plus-circle"></i> Post a Job</button>
+          <button class="nav-item" data-page="applicantsPage"><i class="fas fa-users"></i> Applicants</button>
+          <button class="nav-item" data-page="interviewsPage"><i class="fas fa-calendar-check"></i> Interviews</button>
+          <button class="nav-item" data-page="jobPostingsPage"><i class="fas fa-briefcase"></i> Job Postings</button>
+          <button class="nav-item" data-page="messagesPage"><i class="fas fa-comment-dots"></i> Messages</button>
+          <button class="nav-item" data-page="settingsPage"><i class="fas fa-sliders-h"></i> Settings</button>
+        </nav>
+      </aside>
+
+      <!-- ======= MAIN CONTENT ======= -->
+      <main class="main-content">
+
+        <!-- TOP HEADER -->
+        <div class="top-header">
+          <div class="header-actions">
+            <div class="search-wrapper">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="search-input" placeholder="Search candidates...">
+            </div>
+            <div class="icon-btn" id="notifBtn">
+              <i class="fa-regular fa-bell"></i>
+            </div>
+            <div class="avatar" id="profileBtn">
+              <i class="fa-regular fa-user"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: DASHBOARD ===================== -->
+        <div id="dashboardPage" class="page active">
+          <div class="title-row">
+            <div class="title-left">
+              <h1>Company Dashboard</h1>
+              <p><i class="fa-regular fa-chart-bar"></i> Overview of all recruitment activities</p>
+            </div>
+            <div class="date-badge"><i class="fa-regular fa-calendar"></i> Oct 10 – Nov 10, 2026</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card" onclick="showPage('jobPostingsPage')">
+              <div class="stat-label"><i class="fas fa-briefcase"></i> Active Job Postings</div>
+              <div class="stat-number" data-target="4">0</div>
+            </div>
+            <div class="stat-card" onclick="showPage('applicantsPage')">
+              <div class="stat-label"><i class="fas fa-users"></i> Total Applicants</div>
+              <div class="stat-number" data-target="115">0</div>
+            </div>
+            <div class="stat-card" onclick="showPage('applicantsPage')">
+              <div class="stat-label"><i class="fas fa-user-check"></i> Shortlisted</div>
+              <div class="stat-number" data-target="18">0</div>
+            </div>
+            <div class="stat-card" onclick="showPage('interviewsPage')">
+              <div class="stat-label"><i class="fas fa-percent"></i> Avg. Match Score</div>
+              <div class="stat-number" data-target="79">0<span class="stat-unit">%</span></div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="recent-card">
+              <div class="recent-header">
+                <h3><i class="fa-regular fa-clock"></i> Recent Activity</h3>
+                <a href="#" onclick="showPage('applicantsPage'); return false;">View all <i class="fas fa-arrow-right"></i></a>
+              </div>
+              <ul class="activity-list">
+                <li class="activity-item">
+                  <span class="activity-desc">New applicant for <strong>Backend Engineer</strong> <span class="badge-active">New</span></span>
+                  <span class="activity-time">2h ago</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc">Shortlisted 3 candidates for UX Designer</span>
+                  <span class="activity-time">5h ago</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc">Interview confirmed with John Doe</span>
+                  <span class="activity-time">1d ago</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc">Job posting <strong>Frontend Dev</strong> expires in 2 days</span>
+                  <span class="activity-time">1d ago</span>
+                </li>
+              </ul>
+            </div>
+            <div class="job-cards-stack">
+              <div class="job-card">
+                <div class="job-title-row"><span class="job-title">Product Manager</span></div>
+                <div class="job-location"><i class="fas fa-briefcase"></i> Product · San Francisco, CA</div>
+                <div class="job-metrics">
+                  <div class="metric"><span class="metric-value">18</span><span class="metric-label">applicants</span></div>
+                  <div class="metric"><span class="metric-value">3</span><span class="metric-label">shortlisted</span></div>
+                  <a href="#" class="view-link" onclick="showPage('applicantsPage'); return false;">View <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+              <div class="job-card">
+                <div class="job-title-row">
+                  <span class="job-title">UX Designer</span>
+                  <span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.45rem;margin-right:4px;color:#f15a24;"></i> Active</span>
+                </div>
+                <div class="job-location"><i class="fas fa-paint-brush"></i> Design · New York, NY</div>
+                <div class="job-metrics">
+                  <div class="metric"><span class="metric-value">27</span><span class="metric-label">applicants</span></div>
+                  <div class="metric"><span class="metric-value">6</span><span class="metric-label">shortlisted</span></div>
+                  <a href="#" class="view-link" onclick="showPage('applicantsPage'); return false;">View <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="extra-features">
+            <div class="chart-card">
+              <div class="card-header">
+                <i class="fa-regular fa-chart-line"></i>
+                <h3>Applicant Trends</h3>
+              </div>
+              <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+              </div>
+              <p style="color:var(--gray-cool);font-size:0.85rem;margin-top:0.8rem;text-align:center;">Weekly applicants (last 6 weeks)</p>
+            </div>
+            <div class="quick-actions-card">
+              <div class="card-header">
+                <i class="fa-regular fa-bolt"></i>
+                <h3>Quick Actions</h3>
+              </div>
+              <div class="quick-actions-grid">
+                <div class="action-btn" onclick="showPage('postJobPage')"><i class="fas fa-plus-circle"></i><span>Post a Job</span></div>
+                <div class="action-btn" onclick="showPage('interviewsPage')"><i class="fas fa-calendar-check"></i><span>Schedule Interview</span></div>
+                <div class="action-btn" onclick="showPage('applicantsPage')"><i class="fas fa-users"></i><span>View Applicants</span></div>
+                <div class="action-btn" onclick="showPage('messagesPage')"><i class="fas fa-comment-dots"></i><span>Messages</span></div>
+              </div>
+              <div style="margin-top:1.2rem;">
+                <p style="font-weight:600;color:var(--deep-blue);margin-bottom:0.8rem;"><i class="fa-regular fa-clock" style="color:var(--orange-primary);margin-right:0.5rem;"></i>Upcoming Interviews</p>
+                <div class="interview-item">
+                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Today 14:00</span></div>
+                  <span class="interview-role">John Doe — Frontend Developer</span>
+                </div>
+                <div class="interview-item">
+                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Tomorrow 10:30</span></div>
+                  <span class="interview-role">Sara Kim — Backend Engineer</span>
+                </div>
+                <div class="interview-item">
+                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Nov 12 · 15:00</span></div>
+                  <span class="interview-role">Andi Putra — Product Manager</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: POST A JOB ===================== -->
+        <div id="postJobPage" class="page">
+          <div class="page-header">
+            <h1>Post a Job</h1>
+            <p>Create a new job listing to attract top talent</p>
+          </div>
+          <div class="form-card">
+            <div class="form-group">
+              <label>Job Title</label>
+              <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Department</label>
+                <select class="form-input">
+                  <option>Engineering</option>
+                  <option>Design</option>
+                  <option>Product</option>
+                  <option>Marketing</option>
+                  <option>Human Resources</option>
+                  <option>Finance</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-input" placeholder="e.g. Jakarta, Indonesia">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Job Type</label>
+                <select class="form-input">
+                  <option>Full-time</option>
+                  <option>Part-time</option>
+                  <option>Contract</option>
+                  <option>Internship</option>
+                  <option>Remote</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Salary Range</label>
+                <input type="text" class="form-input" placeholder="e.g. $5,000 – $8,000 / month">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Job Description</label>
+              <textarea class="form-input form-textarea" placeholder="Describe the role, responsibilities, and what makes it exciting..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Requirements</label>
+              <textarea class="form-input form-textarea" placeholder="List specific requirements: minimum experience, certifications, education level, etc."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Required Skills</label>
+              <input type="text" class="form-input" placeholder="e.g. React, TypeScript, Node.js (comma separated)">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Application Deadline</label>
+                <input type="date" class="form-input">
+              </div>
+              <div class="form-group">
+                <label>Posting Status</label>
+                <select class="form-input">
+                  <option>Active</option>
+                  <option>Draft</option>
+                  <option>Closed</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-secondary" onclick="showPage('dashboardPage')"><i class="fas fa-times"></i> Cancel</button>
+              <button class="btn-primary" onclick="alert('Job posted successfully!'); showPage('jobPostingsPage')"><i class="fas fa-paper-plane"></i> Publish Job</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: APPLICANTS (FR-04/05/06/07) ===================== -->
+        <div id="applicantsPage" class="page">
+          <div class="page-header">
+            <h1>Applicants</h1>
+            <p>Review candidates with AI-generated summaries, scores, and flags</p>
+          </div>
+
+          <!-- AI Filter Panel (FR-06) -->
+          <div class="ai-filter-panel">
+            <div class="ai-filter-header">
+              <h3><i class="fas fa-robot"></i> AI Requirement Matching</h3>
+              <button class="btn-primary btn-sm" onclick="alert('AI filter applied! Showing matched candidates.')"><i class="fas fa-filter"></i> Apply AI Filter</button>
+            </div>
+            <div class="ai-filter-row">
+              <div class="form-group" style="flex:1;">
+                <label style="font-size:0.8rem;font-weight:600;">Min. AI Score</label>
+                <input type="number" class="form-input" placeholder="e.g. 70" value="70" style="width:100%;">
+              </div>
+              <div class="form-group" style="flex:2;">
+                <label style="font-size:0.8rem;font-weight:600;">Required Skills</label>
+                <input type="text" class="form-input" placeholder="e.g. Python, Machine Learning" style="width:100%;">
+              </div>
+              <div class="form-group" style="flex:1;">
+                <label style="font-size:0.8rem;font-weight:600;">Min. Experience</label>
+                <select class="form-input" style="width:100%;">
+                  <option>Any</option>
+                  <option>1+ years</option>
+                  <option>3+ years</option>
+                  <option>5+ years</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <button class="filter-btn active" onclick="setFilter(this)">All <span class="filter-count">115</span></button>
+            <button class="filter-btn" onclick="setFilter(this)">New <span class="filter-count">24</span></button>
+            <button class="filter-btn" onclick="setFilter(this)">Shortlisted <span class="filter-count">18</span></button>
+            <button class="filter-btn" onclick="setFilter(this)">Interview <span class="filter-count">6</span></button>
+            <button class="filter-btn" onclick="setFilter(this)">Rejected <span class="filter-count">12</span></button>
+          </div>
+          <div class="applicants-table">
+            <div class="table-header" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <span>Candidate</span>
+              <span>AI Summary</span>
+              <span>Score</span>
+              <span>Flags</span>
+              <span>Applied</span>
+              <span>Status</span>
+              <span>Action</span>
+            </div>
+            <!-- John Doe -->
+            <div class="table-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar">JD</div>
+                <div><div class="cand-name">John Doe</div><div class="cand-email">john@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">React, 3yr exp, BSc CS, strong portfolio</span>
+              <span class="table-cell"><span class="ai-score high">92</span></span>
+              <span class="table-cell"><span class="flag-none" title="No flags"><i class="fas fa-check-circle"></i></span></span>
+              <span class="table-cell muted">2h ago</span>
+              <span class="table-cell"><span class="status-badge s-interview">Interview</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('John Doe')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('John Doe')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('John Doe')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+            <!-- Sara Kim -->
+            <div class="table-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">SK</div>
+                <div><div class="cand-name">Sara Kim</div><div class="cand-email">sara@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">Node.js, 4yr, MSc, API design expert</span>
+              <span class="table-cell"><span class="ai-score high">88</span></span>
+              <span class="table-cell"><span class="flag-none" title="No flags"><i class="fas fa-check-circle"></i></span></span>
+              <span class="table-cell muted">5h ago</span>
+              <span class="table-cell"><span class="status-badge s-shortlisted">Shortlisted</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('Sara Kim')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('Sara Kim')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('Sara Kim')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+            <!-- Andi Putra -->
+            <div class="table-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar" style="background:linear-gradient(135deg,#34d399,#059669)">AP</div>
+                <div><div class="cand-name">Andi Putra</div><div class="cand-email">andi@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">Agile, 2yr PM, BSc, some gaps</span>
+              <span class="table-cell"><span class="ai-score mid">74</span></span>
+              <span class="table-cell"><span class="flag-warn" title="AI Flag: Experience gap detected"><i class="fas fa-exclamation-triangle"></i></span></span>
+              <span class="table-cell muted">1d ago</span>
+              <span class="table-cell"><span class="status-badge s-new">New</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('Andi Putra')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('Andi Putra')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('Andi Putra')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+            <!-- Rita Lim -->
+            <div class="table-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar" style="background:linear-gradient(135deg,#f472b6,#db2777)">RL</div>
+                <div><div class="cand-name">Rita Lim</div><div class="cand-email">rita@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">Figma, 5yr UX, excellent portfolio</span>
+              <span class="table-cell"><span class="ai-score high">95</span></span>
+              <span class="table-cell"><span class="flag-none" title="No flags"><i class="fas fa-check-circle"></i></span></span>
+              <span class="table-cell muted">2d ago</span>
+              <span class="table-cell"><span class="status-badge s-shortlisted">Shortlisted</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('Rita Lim')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('Rita Lim')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('Rita Lim')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+            <!-- Budi Wijaya - FLAGGED -->
+            <div class="table-row flagged-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar" style="background:linear-gradient(135deg,#fbbf24,#d97706)">BW</div>
+                <div><div class="cand-name">Budi Wijaya</div><div class="cand-email">budi@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">Python, 1yr, inconsistent dates</span>
+              <span class="table-cell"><span class="ai-score low">61</span></span>
+              <span class="table-cell"><span class="flag-red" title="AI Red Flag: Inconsistent employment dates"><i class="fas fa-flag"></i></span></span>
+              <span class="table-cell muted">3d ago</span>
+              <span class="table-cell"><span class="status-badge s-rejected">Rejected</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('Budi Wijaya')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('Budi Wijaya')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('Budi Wijaya')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+            <!-- Maya Rizky -->
+            <div class="table-row" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
+              <div class="candidate-cell">
+                <div class="cand-avatar" style="background:linear-gradient(135deg,#60a5fa,#2563eb)">MR</div>
+                <div><div class="cand-name">Maya Rizky</div><div class="cand-email">maya@email.com</div></div>
+              </div>
+              <span class="table-cell ai-summary">Figma, 3yr UX, user research expert</span>
+              <span class="table-cell"><span class="ai-score high">89</span></span>
+              <span class="table-cell"><span class="flag-none" title="No flags"><i class="fas fa-check-circle"></i></span></span>
+              <span class="table-cell muted">3d ago</span>
+              <span class="table-cell"><span class="status-badge s-interview">Interview</span></span>
+              <span class="table-cell action-cell">
+                <button class="action-mini green" onclick="shortlistCandidate('Maya Rizky')"><i class="fas fa-user-check"></i></button>
+                <button class="action-mini red" onclick="rejectCandidate('Maya Rizky')"><i class="fas fa-user-times"></i></button>
+                <button class="action-mini" onclick="viewApplicantDetail('Maya Rizky')"><i class="fas fa-eye"></i></button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: INTERVIEWS ===================== -->
+        <div id="interviewsPage" class="page">
+          <div class="page-header">
+            <h1>Interviews</h1>
+            <p>Manage your scheduled and upcoming interviews</p>
+          </div>
+          <div class="two-col">
+            <div class="recent-card">
+              <div class="recent-header">
+                <h3><i class="fas fa-calendar-check"></i> Upcoming</h3>
+                <button class="btn-primary btn-sm" onclick="alert('Schedule new interview')"><i class="fas fa-plus"></i> Schedule</button>
+              </div>
+              <div class="interview-cards-list">
+                <div class="interview-full-card">
+                  <div class="ifc-top">
+                    <div class="cand-avatar ifc-avatar">JD</div>
+                    <div class="ifc-info"><div class="ifc-name">John Doe</div><div class="ifc-role">Frontend Developer</div></div>
+                    <span class="status-badge s-interview" style="margin-left:auto;">Scheduled</span>
+                  </div>
+                  <div class="ifc-meta">
+                    <span><i class="fa-regular fa-calendar" style="color:var(--orange-primary)"></i> Today, 14:00</span>
+                    <span><i class="fas fa-video" style="color:var(--orange-primary)"></i> Google Meet</span>
+                    <span><i class="fas fa-clock" style="color:var(--orange-primary)"></i> 45 min</span>
+                  </div>
+                  <div class="ifc-actions">
+                    <button class="btn-secondary btn-sm" onclick="alert('Rescheduling...')"><i class="fas fa-redo"></i> Reschedule</button>
+                    <button class="btn-primary btn-sm" onclick="alert('Joining...')"><i class="fas fa-video"></i> Join</button>
+                  </div>
+                </div>
+                <div class="interview-full-card">
+                  <div class="ifc-top">
+                    <div class="cand-avatar ifc-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">SK</div>
+                    <div class="ifc-info"><div class="ifc-name">Sara Kim</div><div class="ifc-role">Backend Engineer</div></div>
+                    <span class="status-badge s-interview" style="margin-left:auto;">Scheduled</span>
+                  </div>
+                  <div class="ifc-meta">
+                    <span><i class="fa-regular fa-calendar" style="color:var(--orange-primary)"></i> Tomorrow, 10:30</span>
+                    <span><i class="fas fa-video" style="color:var(--orange-primary)"></i> Zoom</span>
+                    <span><i class="fas fa-clock" style="color:var(--orange-primary)"></i> 60 min</span>
+                  </div>
+                  <div class="ifc-actions">
+                    <button class="btn-secondary btn-sm" onclick="alert('Rescheduling...')"><i class="fas fa-redo"></i> Reschedule</button>
+                    <button class="btn-primary btn-sm" onclick="alert('Joining...')"><i class="fas fa-video"></i> Join</button>
+                  </div>
+                </div>
+                <div class="interview-full-card">
+                  <div class="ifc-top">
+                    <div class="cand-avatar ifc-avatar" style="background:linear-gradient(135deg,#34d399,#059669)">AP</div>
+                    <div class="ifc-info"><div class="ifc-name">Andi Putra</div><div class="ifc-role">Product Manager</div></div>
+                    <span class="status-badge s-interview" style="margin-left:auto;">Scheduled</span>
+                  </div>
+                  <div class="ifc-meta">
+                    <span><i class="fa-regular fa-calendar" style="color:var(--orange-primary)"></i> Nov 12, 15:00</span>
+                    <span><i class="fas fa-building" style="color:var(--orange-primary)"></i> On-site</span>
+                    <span><i class="fas fa-clock" style="color:var(--orange-primary)"></i> 90 min</span>
+                  </div>
+                  <div class="ifc-actions">
+                    <button class="btn-secondary btn-sm" onclick="alert('Rescheduling...')"><i class="fas fa-redo"></i> Reschedule</button>
+                    <button class="btn-primary btn-sm" onclick="alert('Details sent!')"><i class="fas fa-paper-plane"></i> Send Details</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="recent-card">
+              <div class="recent-header"><h3><i class="fas fa-check-circle"></i> Completed</h3></div>
+              <ul class="activity-list">
+                <li class="activity-item">
+                  <span class="activity-desc"><strong>Rita Lim</strong> — UX Designer <span class="status-badge s-shortlisted" style="font-size:0.6rem;padding:0.2rem 0.7rem;">Shortlisted</span></span>
+                  <span class="activity-time">Oct 8</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc"><strong>Kevin Tan</strong> — Data Analyst <span class="status-badge s-rejected" style="font-size:0.6rem;padding:0.2rem 0.7rem;">Rejected</span></span>
+                  <span class="activity-time">Oct 6</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc"><strong>Dewi Sari</strong> — Marketing Lead <span class="status-badge s-shortlisted" style="font-size:0.6rem;padding:0.2rem 0.7rem;">Shortlisted</span></span>
+                  <span class="activity-time">Oct 5</span>
+                </li>
+                <li class="activity-item">
+                  <span class="activity-desc"><strong>Ali Hassan</strong> — Frontend Dev <span class="status-badge s-rejected" style="font-size:0.6rem;padding:0.2rem 0.7rem;">Rejected</span></span>
+                  <span class="activity-time">Oct 3</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: JOB POSTINGS ===================== -->
+        <div id="jobPostingsPage" class="page">
+          <div class="page-header-row">
+            <div class="page-header" style="margin-bottom:0;">
+              <h1>Job Postings</h1>
+              <p>Manage all your active and past job listings</p>
+            </div>
+            <button class="btn-primary" onclick="showPage('postJobPage')"><i class="fas fa-plus"></i> Post New Job</button>
+          </div>
+          <div class="job-postings-grid">
+            <div class="posting-card">
+              <div class="posting-top">
+                <div><div class="posting-title">Frontend Developer</div><div class="posting-meta"><i class="fas fa-code"></i> Engineering · Jakarta, Indonesia</div></div>
+                <span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.4rem;margin-right:4px;color:#f15a24;"></i> Active</span>
+              </div>
+              <div class="posting-stats">
+                <div class="posting-stat"><span class="ps-num">34</span><span class="ps-label">applicants</span></div>
+                <div class="posting-stat"><span class="ps-num">8</span><span class="ps-label">shortlisted</span></div>
+                <div class="posting-stat"><span class="ps-num">2</span><span class="ps-label">interviews</span></div>
+              </div>
+              <div class="posting-footer">
+                <span class="posting-deadline"><i class="fas fa-clock"></i> Closes Nov 15, 2026</span>
+                <div class="posting-actions">
+                  <button class="action-mini" onclick="alert('Editing...')"><i class="fas fa-pen"></i> Edit</button>
+                  <button class="action-mini red" onclick="alert('Closing...')"><i class="fas fa-times"></i> Close</button>
+                </div>
+              </div>
+            </div>
+            <div class="posting-card">
+              <div class="posting-top">
+                <div><div class="posting-title">UX Designer</div><div class="posting-meta"><i class="fas fa-paint-brush"></i> Design · New York, NY</div></div>
+                <span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.4rem;margin-right:4px;color:#f15a24;"></i> Active</span>
+              </div>
+              <div class="posting-stats">
+                <div class="posting-stat"><span class="ps-num">27</span><span class="ps-label">applicants</span></div>
+                <div class="posting-stat"><span class="ps-num">6</span><span class="ps-label">shortlisted</span></div>
+                <div class="posting-stat"><span class="ps-num">1</span><span class="ps-label">interviews</span></div>
+              </div>
+              <div class="posting-footer">
+                <span class="posting-deadline"><i class="fas fa-clock"></i> Closes Nov 20, 2026</span>
+                <div class="posting-actions">
+                  <button class="action-mini" onclick="alert('Editing...')"><i class="fas fa-pen"></i> Edit</button>
+                  <button class="action-mini red" onclick="alert('Closing...')"><i class="fas fa-times"></i> Close</button>
+                </div>
+              </div>
+            </div>
+            <div class="posting-card">
+              <div class="posting-top">
+                <div><div class="posting-title">Product Manager</div><div class="posting-meta"><i class="fas fa-briefcase"></i> Product · San Francisco, CA</div></div>
+                <span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.4rem;margin-right:4px;color:#f15a24;"></i> Active</span>
+              </div>
+              <div class="posting-stats">
+                <div class="posting-stat"><span class="ps-num">18</span><span class="ps-label">applicants</span></div>
+                <div class="posting-stat"><span class="ps-num">3</span><span class="ps-label">shortlisted</span></div>
+                <div class="posting-stat"><span class="ps-num">1</span><span class="ps-label">interviews</span></div>
+              </div>
+              <div class="posting-footer">
+                <span class="posting-deadline"><i class="fas fa-clock"></i> Closes Dec 1, 2026</span>
+                <div class="posting-actions">
+                  <button class="action-mini" onclick="alert('Editing...')"><i class="fas fa-pen"></i> Edit</button>
+                  <button class="action-mini red" onclick="alert('Closing...')"><i class="fas fa-times"></i> Close</button>
+                </div>
+              </div>
+            </div>
+            <div class="posting-card closed">
+              <div class="posting-top">
+                <div><div class="posting-title">Backend Engineer</div><div class="posting-meta"><i class="fas fa-server"></i> Engineering · Remote</div></div>
+                <span class="badge-closed">Closed</span>
+              </div>
+              <div class="posting-stats">
+                <div class="posting-stat"><span class="ps-num">56</span><span class="ps-label">applicants</span></div>
+                <div class="posting-stat"><span class="ps-num">12</span><span class="ps-label">shortlisted</span></div>
+                <div class="posting-stat"><span class="ps-num">4</span><span class="ps-label">hired</span></div>
+              </div>
+              <div class="posting-footer">
+                <span class="posting-deadline"><i class="fas fa-check"></i> Closed Oct 1, 2026</span>
+                <div class="posting-actions">
+                  <button class="action-mini" onclick="showPage('postJobPage')"><i class="fas fa-redo"></i> Repost</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: MESSAGES ===================== -->
+        <div id="messagesPage" class="page">
+          <div class="page-header">
+            <h1>Messages</h1>
+            <p>Communicate with candidates directly</p>
+          </div>
+          <div class="messages-layout">
+            <div class="messages-list">
+              <div class="msg-item active" onclick="selectMsg(this, 'John Doe', 'Frontend Developer')">
+                <div class="cand-avatar msg-avatar">JD</div>
+                <div class="msg-preview">
+                  <div class="msg-name">John Doe</div>
+                  <div class="msg-snippet">Thanks for the opportunity!</div>
+                </div>
+                <div class="msg-meta"><span class="msg-time">2h ago</span><span class="msg-unread">2</span></div>
+              </div>
+              <div class="msg-item" onclick="selectMsg(this, 'Sara Kim', 'Backend Engineer')">
+                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">SK</div>
+                <div class="msg-preview">
+                  <div class="msg-name">Sara Kim</div>
+                  <div class="msg-snippet">Looking forward to the interview!</div>
+                </div>
+                <div class="msg-meta"><span class="msg-time">5h ago</span></div>
+              </div>
+              <div class="msg-item" onclick="selectMsg(this, 'Andi Putra', 'Product Manager')">
+                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#34d399,#059669)">AP</div>
+                <div class="msg-preview">
+                  <div class="msg-name">Andi Putra</div>
+                  <div class="msg-snippet">Could we reschedule to next week?</div>
+                </div>
+                <div class="msg-meta"><span class="msg-time">1d ago</span><span class="msg-unread">1</span></div>
+              </div>
+              <div class="msg-item" onclick="selectMsg(this, 'Rita Lim', 'UX Designer')">
+                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#f472b6,#db2777)">RL</div>
+                <div class="msg-preview">
+                  <div class="msg-name">Rita Lim</div>
+                  <div class="msg-snippet">I've attached my updated portfolio.</div>
+                </div>
+                <div class="msg-meta"><span class="msg-time">2d ago</span></div>
+              </div>
+            </div>
+            <div class="messages-chat">
+              <div class="chat-header">
+                <div class="cand-avatar" style="width:42px;height:42px;font-size:0.9rem;flex-shrink:0;">JD</div>
+                <div><div class="chat-name" id="chatName">John Doe</div><div class="chat-role" id="chatRole">Frontend Developer</div></div>
+                <div style="margin-left:auto;display:flex;gap:0.8rem;">
+                  <button class="action-mini" onclick="showPage('interviewsPage')"><i class="fas fa-calendar-check"></i> Schedule</button>
+                  <button class="action-mini" onclick="showPage('applicantsPage')"><i class="fas fa-user"></i> Profile</button>
+                </div>
+              </div>
+              <div class="chat-body" id="chatBody">
+                <div class="chat-bubble received">Hi! I saw your job posting for Frontend Developer and I'm very interested. I have 3 years of React experience.</div>
+                <div class="chat-bubble sent">Thanks for reaching out, John! Your profile looks great. We'd like to schedule a technical interview. Are you available this week?</div>
+                <div class="chat-bubble received">Absolutely! I'm available Tuesday and Thursday afternoon.</div>
+                <div class="chat-bubble sent">Perfect. Let's do Thursday at 14:00 via Google Meet. I'll send a calendar invite shortly.</div>
+                <div class="chat-bubble received">Thanks for the opportunity! Really excited about this role. See you Thursday! 👍</div>
+              </div>
+              <div class="chat-input-row">
+                <input type="text" class="chat-input" placeholder="Type a message..." id="chatInput" onkeydown="if(event.key==='Enter') sendMsg()">
+                <button class="btn-primary" onclick="sendMsg()"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================== PAGE: SETTINGS ===================== -->
+        <div id="settingsPage" class="page">
+          <div class="page-header">
+            <h1>Settings</h1>
+            <p>Manage your company account preferences</p>
+          </div>
+          <div class="two-col">
+            <div class="recent-card">
+              <div class="recent-header"><h3><i class="fas fa-building"></i> Company Info</h3></div>
+              <div class="settings-form">
+                <div class="form-group"><label>Company Name</label><input type="text" class="form-input" value="Acme Corp"></div>
+                <div class="form-group"><label>Industry</label><select class="form-input"><option selected>Technology</option><option>Finance</option><option>Healthcare</option><option>E-commerce</option></select></div>
+                <div class="form-group"><label>Website</label><input type="text" class="form-input" value="https://acmecorp.com"></div>
+                <div class="form-group"><label>Company Size</label><select class="form-input"><option>1–50</option><option selected>51–200</option><option>201–500</option><option>500+</option></select></div>
+                <button class="btn-primary" style="margin-top:0.5rem;" onclick="alert('Saved!')"><i class="fas fa-save"></i> Save Changes</button>
+              </div>
+            </div>
+            <div class="recent-card">
+              <div class="recent-header"><h3><i class="fas fa-sliders-h"></i> Account</h3></div>
+              <ul class="activity-list">
+                <li class="activity-item"><span class="activity-desc"><i class="fas fa-lock" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Change Password</span><button class="action-mini" onclick="alert('Change password')">Update</button></li>
+                <li class="activity-item"><span class="activity-desc"><i class="fas fa-envelope" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Update Email</span><button class="action-mini" onclick="alert('Update email')">Update</button></li>
+                <li class="activity-item"><span class="activity-desc"><i class="fas fa-bell" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Notifications</span><button class="action-mini" onclick="alert('Notification settings')">Manage</button></li>
+                <li class="activity-item"><span class="activity-desc"><i class="fas fa-users-cog" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Team Members</span><button class="action-mini" onclick="alert('Manage team')">Manage</button></li>
+                <li class="activity-item"><span class="activity-desc"><i class="fas fa-credit-card" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Billing & Plan</span><button class="action-mini" onclick="alert('Billing')">Manage</button></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======= PAGE: PROFILE (avatar click) ======= -->
+        <div id="profilePage" class="page">
+          <div class="page-header">
+            <h1>Company Profile</h1>
+            <p>Your public profile on MeetUp Talent</p>
+          </div>
+          <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+            <div class="stat-card">
+              <div class="stat-label"><i class="fas fa-building"></i> Company</div>
+              <div class="stat-number" style="font-size:1.8rem;">Acme Corp</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label"><i class="fas fa-industry"></i> Industry</div>
+              <div class="stat-number" style="font-size:1.8rem;">Technology</div>
+            </div>
+          </div>
+          <div class="recent-card" style="margin-top:1.5rem;">
+            <div class="recent-header"><h3><i class="fas fa-info-circle"></i> Company Details</h3></div>
+            <ul class="activity-list">
+              <li class="activity-item"><span class="activity-desc">Email: hr@acmecorp.com</span></li>
+              <li class="activity-item"><span class="activity-desc">Website: acmecorp.com</span></li>
+              <li class="activity-item"><span class="activity-desc">Location: San Francisco, CA</span></li>
+              <li class="activity-item"><span class="activity-desc">Size: 51–200 employees</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ======= PAGE: NOTIFICATIONS ======= -->
+        <div id="notificationPage" class="page">
+          <div class="page-header">
+            <h1>Notifications</h1>
+            <p>Your recent alerts and updates</p>
+          </div>
+          <div class="recent-card">
+            <div class="recent-header"><h3><i class="fa-regular fa-bell"></i> Recent</h3></div>
+            <ul class="activity-list">
+              <li class="activity-item"><span class="activity-desc"><span class="badge-active">New</span> John Doe applied to Frontend Developer</span><span class="activity-time">2h ago</span></li>
+              <li class="activity-item"><span class="activity-desc">Interview with Sara Kim confirmed for tomorrow</span><span class="activity-time">5h ago</span></li>
+              <li class="activity-item"><span class="activity-desc">UX Designer posting got 5 new applicants</span><span class="activity-time">1d ago</span></li>
+              <li class="activity-item"><span class="activity-desc">Job posting "Frontend Dev" expires in 2 days</span><span class="activity-time">1d ago</span></li>
+              <li class="activity-item"><span class="activity-desc">Andi Putra sent you a message</span><span class="activity-time">2d ago</span></li>
+            </ul>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
