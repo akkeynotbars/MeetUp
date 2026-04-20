@@ -192,22 +192,57 @@
     else { cf.classList.remove('visible'); }
   }
 
-  // Signup (placeholder — hooked up to backend in Week 2)
-  function handleSignup(e) {
+  // Signup — calls backend API
+  async function handleSignup(e) {
     e.preventDefault();
     const btn = document.getElementById('signupBtn');
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const company_name = document.getElementById('companyName')?.value.trim();
+    const industry = document.getElementById('industry')?.value;
+
     btn.innerText = 'Creating account...';
+    btn.disabled = true;
     btn.style.opacity = '0.7';
-    setTimeout(function () {
-      btn.innerText = 'Verification email sent!';
-      btn.style.background = '#27c93f';
-      if (selectedRole === 'company') {
-        alert('Company account created with "Pending Verification" status. Please check your email.');
-      } else {
-        alert('Account created! A verification email has been sent. Please verify to continue.');
+
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role: selectedRole, company_name, industry }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        btn.innerText = 'Create Account';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        alert(data.error || 'Signup failed. Please try again.');
+        return;
       }
-      setTimeout(function () { window.location.href = 'login.html'; }, 1500);
-    }, 1500);
+
+      // Store token and user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      btn.innerText = 'Account Created!';
+      btn.style.background = '#27c93f';
+
+      // Redirect directly to the right dashboard
+      setTimeout(function () {
+        if (data.user.role === 'company') {
+          window.location.href = '../CompanyDashboard/dashboard.html';
+        } else {
+          window.location.href = '../UserDashboard/dashboard.html';
+        }
+      }, 1000);
+    } catch {
+      btn.innerText = 'Create Account';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      alert('Cannot connect to server. Make sure the backend is running.');
+    }
   }
 </script>
 </body>

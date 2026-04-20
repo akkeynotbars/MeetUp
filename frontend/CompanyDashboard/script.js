@@ -1,4 +1,108 @@
 // =====================
+// API HELPERS
+// =====================
+const API = 'http://localhost:3000/api';
+
+function authHeaders() {
+  const token = localStorage.getItem('token');
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+}
+
+// =====================
+// JOB POSTING (Task 23 — FR-03)
+// =====================
+async function submitJobPosting(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]') || document.getElementById('postJobBtn');
+  const body = {
+    title: document.getElementById('jobTitle')?.value,
+    description: document.getElementById('jobDesc')?.value,
+    requirements: document.getElementById('jobReqs')?.value,
+    location: document.getElementById('jobLocation')?.value,
+    salary_range: document.getElementById('jobSalary')?.value,
+    job_type: document.getElementById('jobType')?.value,
+  };
+
+  if (btn) { btn.textContent = 'Posting...'; btn.disabled = true; }
+
+  try {
+    const res = await fetch(`${API}/jobs`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Failed to post job'); return; }
+    alert('Job posted successfully!');
+    e.target.reset();
+    loadMyJobs();
+  } catch {
+    alert('Cannot connect to server.');
+  } finally {
+    if (btn) { btn.textContent = 'Post Job'; btn.disabled = false; }
+  }
+}
+
+async function loadMyJobs() {
+  try {
+    const res = await fetch(`${API}/jobs/my`, { headers: authHeaders() });
+    const data = await res.json();
+    const container = document.getElementById('jobListings');
+    if (!container || !data.jobs) return;
+    container.innerHTML = data.jobs.length === 0
+      ? '<p style="color:#5b6f94">No job postings yet.</p>'
+      : data.jobs.map(j => `
+          <div class="job-card" style="background:#1a2236;border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;border:1px solid rgba(255,255,255,0.06)">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <strong style="color:#e2e8f0">${j.title}</strong>
+                <span style="margin-left:0.6rem;font-size:0.75rem;color:#27c93f;background:rgba(39,201,63,0.1);padding:2px 8px;border-radius:20px">${j.status}</span>
+              </div>
+              <button onclick="deleteJob('${j.id}')" style="background:none;border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.8rem">Delete</button>
+            </div>
+            <p style="color:#5b6f94;font-size:0.85rem;margin:0.4rem 0 0">${j.location || 'Remote'} · ${j.job_type || 'Full-time'} · ${j.salary_range || 'Salary TBD'}</p>
+          </div>`).join('');
+  } catch { /* server not running */ }
+}
+
+async function deleteJob(id) {
+  if (!confirm('Delete this job posting?')) return;
+  const res = await fetch(`${API}/jobs/${id}`, { method: 'DELETE', headers: authHeaders() });
+  if (res.ok) { alert('Job deleted.'); loadMyJobs(); }
+  else alert('Failed to delete job.');
+}
+
+// =====================
+// APPLICANTS (Task 24 — FR-05/06/07)
+// =====================
+async function loadApplicants(jobId) {
+  const container = document.getElementById('applicantList');
+  if (!container || !jobId) return;
+  container.innerHTML = '<p style="color:#5b6f94">Loading applicants...</p>';
+  try {
+    const res = await fetch(`${API}/applicants/${jobId}`, { headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { container.innerHTML = `<p style="color:#ff5050">${data.error}</p>`; return; }
+    if (!data.applicants.length) { container.innerHTML = '<p style="color:#5b6f94">No applicants yet.</p>'; return; }
+    container.innerHTML = data.applicants.map(a => `
+      <div class="applicant-row" id="app-${a.id}" style="background:#1a2236;border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;border:1px solid rgba(255,255,255,0.06)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong style="color:#e2e8f0">${a.Users?.name || 'Unknown'}</strong>
+            <span style="margin-left:0.5rem;color:#5b6f94;font-size:0.85rem">${a.Users?.email || ''}</span>
+            ${a.CVs?.ai_score != null ? `<span style="margin-left:0.8rem;color:#f7944d;font-weight:600">Score: ${a.CVs.ai_score}/100</span>` : ''}
+          </div>
+          <span style="font-size:0.8rem;padding:3px 10px;border-radius:20px;background:rgba(91,111,148,0.15);color:#5b6f94">${a.status}</span>
+        </div>
+        ${a.CVs?.ai_summary ? `<p style="color:#8a9bbf;font-size:0.85rem;margin:0.5rem 0 0">${a.CVs.ai_summary}</p>` : ''}
+        ${a.CVs?.red_flags?.length ? `<p style="color:#ff5050;font-size:0.8rem;margin:0.3rem 0 0">⚠ ${a.CVs.red_flags.join(' · ')}</p>` : ''}
+        <div style="margin-top:0.8rem;display:flex;gap:0.5rem">
+          <button onclick="shortlistCandidate('${a.id}', '${a.Users?.name}')" style="background:rgba(39,201,63,0.1);border:1px solid rgba(39,201,63,0.3);color:#27c93f;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:0.82rem">Shortlist</button>
+          <button onclick="rejectCandidate('${a.id}', '${a.Users?.name}')" style="background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:0.82rem">Reject</button>
+        </div>
+      </div>`).join('');
+  } catch {
+    container.innerHTML = '<p style="color:#5b6f94">Could not load applicants — backend offline.</p>';
+  }
+}
+
+// =====================
 // PAGE NAVIGATION
 // =====================
 function showPage(pageId) {
@@ -151,27 +255,32 @@ function sendMsg() {
 // =====================
 // SHORTLIST / REJECT (FR-07)
 // =====================
-function shortlistCandidate(name) {
-  if (confirm('Shortlist ' + name + '? The candidate will be notified.')) {
-    alert(name + ' has been moved to Shortlisted. Notification sent: "You have been shortlisted by Acme Corp."');
-  }
+async function shortlistCandidate(id, name) {
+  if (!confirm(`Shortlist ${name}? The candidate will be notified.`)) return;
+  try {
+    const res = await fetch(`${API}/applicants/${id}/shortlist`, { method: 'POST', headers: authHeaders() });
+    if (res.ok) {
+      alert(`${name} has been shortlisted.`);
+      const row = document.getElementById(`app-${id}`);
+      if (row) row.querySelector('[style*="background:rgba(91"]').textContent = 'shortlisted';
+    } else {
+      const d = await res.json();
+      alert(d.error || 'Failed to shortlist.');
+    }
+  } catch { alert('Cannot connect to server.'); }
 }
 
-function rejectCandidate(name) {
-  const reason = prompt('Reject ' + name + '? Enter a reason (optional):');
-  if (reason !== null) {
-    alert(name + ' has been moved to Rejected. Notification sent to the candidate.');
-  }
-}
-
-function viewApplicantDetail(name) {
-  alert('Viewing AI-generated summary for ' + name + ':\n\n' +
-    '--- AI Resume Summary (FR-04) ---\n' +
-    'Name: ' + name + '\n' +
-    'Skills: React, JavaScript, Node.js\n' +
-    'Experience: 3 years in frontend development\n' +
-    'Education: BSc Computer Science\n' +
-    'Key Strengths: Strong portfolio, clean code practices\n' +
-    'AI Score: 92/100\n' +
-    'Red Flags: None detected');
+async function rejectCandidate(id, name) {
+  if (!confirm(`Reject ${name}?`)) return;
+  try {
+    const res = await fetch(`${API}/applicants/${id}/reject`, { method: 'POST', headers: authHeaders() });
+    if (res.ok) {
+      alert(`${name} has been rejected.`);
+      const row = document.getElementById(`app-${id}`);
+      if (row) row.querySelector('[style*="background:rgba(91"]').textContent = 'rejected';
+    } else {
+      const d = await res.json();
+      alert(d.error || 'Failed to reject.');
+    }
+  } catch { alert('Cannot connect to server.'); }
 }

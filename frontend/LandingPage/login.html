@@ -141,29 +141,60 @@
     });
   });
 
-  // Forgot password (placeholder — real flow in Week 2)
+  // Forgot password (placeholder)
   document.getElementById('forgotLink').addEventListener('click', function (e) {
     e.preventDefault();
     alert('Password reset link sent to your email!');
   });
 
-  // Login (placeholder — hooked up to backend in Week 2)
-  document.getElementById('loginForm').addEventListener('submit', function (e) {
+  // Login — calls backend API
+  document.getElementById('loginForm').addEventListener('submit', async function (e) {
     e.preventDefault();
     const btn = document.getElementById('loginBtn');
+    const email = document.getElementById('emailInput').value.trim();
+    const password = document.getElementById('password').value;
+
     btn.innerText = 'Logging in...';
+    btn.disabled = true;
     btn.style.opacity = '0.7';
-    setTimeout(function () {
+
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        btn.innerText = 'Login';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        alert(data.error || 'Login failed. Please try again.');
+        return;
+      }
+
+      // Store token and user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
       btn.innerText = 'Success!';
       btn.style.background = '#27c93f';
+
+      // Redirect based on role from server response
       setTimeout(function () {
-        if (loginRole === 'company') {
+        if (data.user.role === 'company') {
           window.location.href = '../CompanyDashboard/dashboard.html';
         } else {
           window.location.href = '../UserDashboard/dashboard.html';
         }
       }, 800);
-    }, 1200);
+    } catch {
+      btn.innerText = 'Login';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      alert('Cannot connect to server. Make sure the backend is running.');
+    }
   });
 </script>
 </body>
