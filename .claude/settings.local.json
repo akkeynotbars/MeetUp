@@ -3,7 +3,13 @@
     "allow": [
       "Bash(python -c ' *)",
       "Bash(npm install *)",
-      "Bash(npm test *)"
+      "Bash(npm test *)",
+      "Read(//c/PROJECTS/MeetUp/backend/**)",
+      "Read(//c/PROJECTS/MeetUp/backend/routes/**)",
+      "Bash(cp \"C:/PROJECTS/MeetUp/.claude/worktrees/youthful-lederberg-77c5d3/backend/routes/applications.js\" \"C:/PROJECTS/MeetUp/backend/routes/applications.js\")",
+      "Bash(cp \"C:/PROJECTS/MeetUp/.claude/worktrees/youthful-lederberg-77c5d3/backend/server.js\" \"C:/PROJECTS/MeetUp/backend/server.js\")",
+      "Bash(cp -r C:/PROJECTS/MeetUp/.claude/worktrees/youthful-lederberg-77c5d3/frontend/. C:/PROJECTS/MeetUp/frontend/)",
+      "Bash(cp -r C:/PROJECTS/MeetUp/.claude/worktrees/youthful-lederberg-77c5d3/backend/. C:/PROJECTS/MeetUp/backend/)"
     ]
   }
 }

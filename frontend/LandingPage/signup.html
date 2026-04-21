@@ -93,6 +93,9 @@
 </head>
 <body>
 
+<!-- Theme toggle -->
+<button class="auth-theme-btn" id="authThemeBtn" title="Toggle theme"><i class="fas fa-moon"></i></button>
+
 <div class="particles" id="particles"></div>
 
 <nav>
@@ -176,6 +179,21 @@
 
 <!-- Shared helpers (particles) -->
 <script src="../shared/auth.js"></script>
+<script>
+  // Theme init
+  (function(){
+    const t = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    const btn = document.getElementById('authThemeBtn');
+    if (btn) btn.querySelector('i').className = `fas ${t === 'light' ? 'fa-sun' : 'fa-moon'}`;
+  })();
+  document.getElementById('authThemeBtn')?.addEventListener('click', function(){
+    const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    this.querySelector('i').className = `fas ${next === 'light' ? 'fa-sun' : 'fa-moon'}`;
+  });
+</script>
 
 <script>
   // Spawn floating particles

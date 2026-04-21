@@ -1,4 +1,32 @@
 // =====================
+// THEME (dark / light)
+// =====================
+(function initTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const icon = saved === 'light' ? 'fa-sun' : 'fa-moon';
+  document.querySelectorAll('#themeToggleBtn i, #themeToggleHeader i').forEach(el => {
+    el.className = `fas ${icon}`;
+  });
+})();
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  const icon = next === 'light' ? 'fa-sun' : 'fa-moon';
+  document.querySelectorAll('#themeToggleBtn i, #themeToggleHeader i').forEach(el => {
+    el.className = `fas ${icon}`;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
+  document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+});
+
+// =====================
 // API HELPERS
 // =====================
 const API = 'http://localhost:3000/api';
@@ -14,13 +42,16 @@ function authHeaders() {
 async function submitJobPosting(e) {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]') || document.getElementById('postJobBtn');
+  const reqs = document.getElementById('jobReqs')?.value || '';
+  const skills = document.getElementById('jobSkills')?.value || '';
   const body = {
     title: document.getElementById('jobTitle')?.value,
     description: document.getElementById('jobDesc')?.value,
-    requirements: document.getElementById('jobReqs')?.value,
+    requirements: reqs + (skills ? '\n\nSkills: ' + skills : ''),
     location: document.getElementById('jobLocation')?.value,
     salary_range: document.getElementById('jobSalary')?.value,
     job_type: document.getElementById('jobType')?.value,
+    status: document.getElementById('jobStatus')?.value || 'active',
   };
 
   if (btn) { btn.textContent = 'Posting...'; btn.disabled = true; }
@@ -32,6 +63,7 @@ async function submitJobPosting(e) {
     alert('Job posted successfully!');
     e.target.reset();
     loadMyJobs();
+    showPage('jobPostingsPage');
   } catch {
     alert('Cannot connect to server.');
   } finally {
@@ -40,24 +72,40 @@ async function submitJobPosting(e) {
 }
 
 async function loadMyJobs() {
+  const container = document.getElementById('jobListings');
+  if (!container) return;
   try {
     const res = await fetch(`${API}/jobs/my`, { headers: authHeaders() });
     const data = await res.json();
-    const container = document.getElementById('jobListings');
-    if (!container || !data.jobs) return;
-    container.innerHTML = data.jobs.length === 0
-      ? '<p style="color:#5b6f94">No job postings yet.</p>'
-      : data.jobs.map(j => `
-          <div class="job-card" style="background:#1a2236;border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;border:1px solid rgba(255,255,255,0.06)">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <div>
-                <strong style="color:#e2e8f0">${j.title}</strong>
-                <span style="margin-left:0.6rem;font-size:0.75rem;color:#27c93f;background:rgba(39,201,63,0.1);padding:2px 8px;border-radius:20px">${j.status}</span>
-              </div>
-              <button onclick="deleteJob('${j.id}')" style="background:none;border:1px solid rgba(255,80,80,0.3);color:#ff5050;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:0.8rem">Delete</button>
+    if (!data.jobs) return;
+    if (data.jobs.length === 0) {
+      container.innerHTML = '<p style="color:#5b6f94;padding:1rem">No job postings yet. Post your first job!</p>';
+      return;
+    }
+    container.innerHTML = data.jobs.map(j => {
+      const isActive = j.status === 'active';
+      const badge = isActive
+        ? `<span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.4rem;margin-right:4px;color:#f15a24;"></i> Active</span>`
+        : `<span class="job-badge-closed" style="background:rgba(91,111,148,0.15);color:#5b6f94;padding:4px 10px;border-radius:20px;font-size:0.8rem">Closed</span>`;
+      return `
+        <div class="posting-card">
+          <div class="posting-top">
+            <div>
+              <div class="posting-title">${j.title}</div>
+              <div class="posting-meta"><i class="fas fa-map-marker-alt"></i> ${j.job_type || 'Full-time'} · ${j.location || 'Remote'}</div>
             </div>
-            <p style="color:#5b6f94;font-size:0.85rem;margin:0.4rem 0 0">${j.location || 'Remote'} · ${j.job_type || 'Full-time'} · ${j.salary_range || 'Salary TBD'}</p>
-          </div>`).join('');
+            ${badge}
+          </div>
+          <div class="posting-stats">
+            <div class="posting-stat"><span class="ps-num">—</span><span class="ps-label">applicants</span></div>
+            <div class="posting-stat"><span class="ps-num">${j.salary_range || '—'}</span><span class="ps-label">salary</span></div>
+          </div>
+          <div class="posting-footer">
+            <button class="btn-outline btn-sm" onclick="deleteJob('${j.id}')"><i class="fas fa-times"></i> Delete</button>
+            <button class="btn-primary btn-sm" onclick="loadApplicants('${j.id}'); showPage('applicantsPage')"><i class="fas fa-users"></i> View Applicants</button>
+          </div>
+        </div>`;
+    }).join('');
   } catch { /* server not running */ }
 }
 
@@ -73,32 +121,63 @@ async function deleteJob(id) {
 // =====================
 async function loadApplicants(jobId) {
   const container = document.getElementById('applicantList');
-  if (!container || !jobId) return;
-  container.innerHTML = '<p style="color:#5b6f94">Loading applicants...</p>';
+  if (!container) return;
+
+  // If no jobId provided, fetch first job from this company
+  if (!jobId) {
+    try {
+      const r = await fetch(`${API}/jobs/my`, { headers: authHeaders() });
+      const d = await r.json();
+      if (!d.jobs || !d.jobs.length) {
+        container.innerHTML = '<div class="table-row"><p style="color:#5b6f94;padding:1rem">No jobs posted yet.</p></div>';
+        return;
+      }
+      jobId = d.jobs[0].id;
+    } catch { return; }
+  }
+
+  container.innerHTML = '<div class="table-row"><p style="color:#5b6f94;padding:1rem">Loading applicants...</p></div>';
   try {
     const res = await fetch(`${API}/applicants/${jobId}`, { headers: authHeaders() });
     const data = await res.json();
-    if (!res.ok) { container.innerHTML = `<p style="color:#ff5050">${data.error}</p>`; return; }
-    if (!data.applicants.length) { container.innerHTML = '<p style="color:#5b6f94">No applicants yet.</p>'; return; }
-    container.innerHTML = data.applicants.map(a => `
-      <div class="applicant-row" id="app-${a.id}" style="background:#1a2236;border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.8rem;border:1px solid rgba(255,255,255,0.06)">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <strong style="color:#e2e8f0">${a.Users?.name || 'Unknown'}</strong>
-            <span style="margin-left:0.5rem;color:#5b6f94;font-size:0.85rem">${a.Users?.email || ''}</span>
-            ${a.CVs?.ai_score != null ? `<span style="margin-left:0.8rem;color:#f7944d;font-weight:600">Score: ${a.CVs.ai_score}/100</span>` : ''}
+    if (!res.ok) {
+      container.innerHTML = `<div class="table-row"><p style="color:#ff5050;padding:1rem">${data.error}</p></div>`;
+      return;
+    }
+    if (!data.applicants.length) {
+      container.innerHTML = '<div class="table-row"><p style="color:#5b6f94;padding:1rem">No applicants yet.</p></div>';
+      return;
+    }
+
+    const cols = 'style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;"';
+    container.innerHTML = data.applicants.map(a => {
+      const name = a.Users?.name || 'Unknown';
+      const email = a.Users?.email || '';
+      const score = a.CVs?.ai_score;
+      const summary = a.CVs?.ai_summary || '—';
+      const flags = a.CVs?.red_flags?.length ? a.CVs.red_flags.join(', ') : null;
+      const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+      const scoreClass = score >= 80 ? 'high' : score >= 60 ? 'mid' : 'low';
+      const statusClass = a.status === 'shortlisted' ? 's-shortlisted' : a.status === 'rejected' ? 's-rejected' : 's-new';
+      return `
+        <div class="table-row" id="app-${a.id}" ${cols}>
+          <div class="candidate-cell">
+            <div class="cand-avatar" style="background:#f7944d">${initials}</div>
+            <div><div class="cand-name">${name}</div><div class="cand-email">${email}</div></div>
           </div>
-          <span style="font-size:0.8rem;padding:3px 10px;border-radius:20px;background:rgba(91,111,148,0.15);color:#5b6f94">${a.status}</span>
-        </div>
-        ${a.CVs?.ai_summary ? `<p style="color:#8a9bbf;font-size:0.85rem;margin:0.5rem 0 0">${a.CVs.ai_summary}</p>` : ''}
-        ${a.CVs?.red_flags?.length ? `<p style="color:#ff5050;font-size:0.8rem;margin:0.3rem 0 0">⚠ ${a.CVs.red_flags.join(' · ')}</p>` : ''}
-        <div style="margin-top:0.8rem;display:flex;gap:0.5rem">
-          <button onclick="shortlistCandidate('${a.id}', '${a.Users?.name}')" style="background:rgba(39,201,63,0.1);border:1px solid rgba(39,201,63,0.3);color:#27c93f;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:0.82rem">Shortlist</button>
-          <button onclick="rejectCandidate('${a.id}', '${a.Users?.name}')" style="background:rgba(255,80,80,0.08);border:1px solid rgba(255,80,80,0.2);color:#ff5050;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:0.82rem">Reject</button>
-        </div>
-      </div>`).join('');
+          <span class="table-cell ai-summary">${summary}</span>
+          <span class="table-cell">${score != null ? `<span class="ai-score ${scoreClass}">${score}</span>` : '—'}</span>
+          <span class="table-cell">${flags ? `<span style="color:#ff5050;font-size:0.75rem">${flags}</span>` : '<span class="flag-none"><i class="fas fa-check-circle"></i></span>'}</span>
+          <span class="table-cell muted">${new Date(a.created_at).toLocaleDateString()}</span>
+          <span class="table-cell"><span class="status-badge ${statusClass}">${a.status}</span></span>
+          <span class="table-cell action-cell">
+            <button class="action-mini green" onclick="shortlistCandidate('${a.id}','${name.replace(/'/g,'')}')"><i class="fas fa-user-check"></i></button>
+            <button class="action-mini red" onclick="rejectCandidate('${a.id}','${name.replace(/'/g,'')}')"><i class="fas fa-user-times"></i></button>
+          </span>
+        </div>`;
+    }).join('');
   } catch {
-    container.innerHTML = '<p style="color:#5b6f94">Could not load applicants — backend offline.</p>';
+    container.innerHTML = '<div class="table-row"><p style="color:#5b6f94;padding:1rem">Could not load — backend offline.</p></div>';
   }
 }
 
@@ -126,6 +205,8 @@ function showPage(pageId) {
 document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
   btn.addEventListener('click', function () {
     showPage(this.dataset.page);
+    if (this.dataset.page === 'applicantsPage') loadApplicants();
+    if (this.dataset.page === 'jobPostingsPage') loadMyJobs();
   });
 });
 

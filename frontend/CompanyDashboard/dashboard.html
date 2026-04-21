@@ -17,18 +17,21 @@
 
       <!-- ======= SIDEBAR ======= -->
       <aside class="sidebar">
-        <div class="platform-name">
-          <i class="fas fa-bolt"></i> MeetUp Talent
-        </div>
+        <div class="sidebar-logo"><i class="fas fa-bolt"></i></div>
+        <div class="sidebar-divider"></div>
         <nav class="sidebar-nav">
-          <button class="nav-item active" data-page="dashboardPage"><i class="fas fa-th-large"></i> Dashboard</button>
-          <button class="nav-item" data-page="postJobPage"><i class="fas fa-plus-circle"></i> Post a Job</button>
-          <button class="nav-item" data-page="applicantsPage"><i class="fas fa-users"></i> Applicants</button>
-          <button class="nav-item" data-page="interviewsPage"><i class="fas fa-calendar-check"></i> Interviews</button>
-          <button class="nav-item" data-page="jobPostingsPage"><i class="fas fa-briefcase"></i> Job Postings</button>
-          <button class="nav-item" data-page="messagesPage"><i class="fas fa-comment-dots"></i> Messages</button>
-          <button class="nav-item" data-page="settingsPage"><i class="fas fa-sliders-h"></i> Settings</button>
+          <button class="nav-item active" data-page="dashboardPage" data-tooltip="Dashboard"><i class="fas fa-th-large"></i></button>
+          <button class="nav-item" data-page="postJobPage" data-tooltip="Post Job"><i class="fas fa-plus-circle"></i></button>
+          <button class="nav-item" data-page="applicantsPage" data-tooltip="Applicants"><i class="fas fa-users"></i></button>
+          <button class="nav-item" data-page="interviewsPage" data-tooltip="Interviews"><i class="fas fa-calendar-check"></i></button>
+          <button class="nav-item" data-page="jobPostingsPage" data-tooltip="Job Postings"><i class="fas fa-briefcase"></i></button>
+          <button class="nav-item" data-page="messagesPage" data-tooltip="Messages"><i class="fas fa-comment-dots"></i></button>
+          <button class="nav-item" data-page="settingsPage" data-tooltip="Settings"><i class="fas fa-sliders-h"></i></button>
         </nav>
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-bottom">
+          <button class="nav-item" id="themeToggleBtn" data-tooltip="Toggle Theme"><i class="fas fa-moon"></i></button>
+        </div>
       </aside>
 
       <!-- ======= MAIN CONTENT ======= -->
@@ -41,6 +44,9 @@
               <i class="fas fa-search search-icon"></i>
               <input type="text" class="search-input" placeholder="Search candidates...">
             </div>
+            <button class="theme-toggle" id="themeToggleHeader" title="Toggle light/dark mode">
+              <i class="fas fa-moon"></i>
+            </button>
             <div class="icon-btn" id="notifBtn">
               <i class="fa-regular fa-bell"></i>
             </div>
@@ -177,14 +183,15 @@
             <p>Create a new job listing to attract top talent</p>
           </div>
           <div class="form-card">
+            <form id="postJobForm" onsubmit="submitJobPosting(event)">
             <div class="form-group">
               <label>Job Title</label>
-              <input type="text" class="form-input" placeholder="e.g. Senior Frontend Developer">
+              <input type="text" id="jobTitle" class="form-input" placeholder="e.g. Senior Frontend Developer" required>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Department</label>
-                <select class="form-input">
+                <select id="jobDept" class="form-input">
                   <option>Engineering</option>
                   <option>Design</option>
                   <option>Product</option>
@@ -195,13 +202,13 @@
               </div>
               <div class="form-group">
                 <label>Location</label>
-                <input type="text" class="form-input" placeholder="e.g. Jakarta, Indonesia">
+                <input type="text" id="jobLocation" class="form-input" placeholder="e.g. Jakarta, Indonesia">
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Job Type</label>
-                <select class="form-input">
+                <select id="jobType" class="form-input">
                   <option>Full-time</option>
                   <option>Part-time</option>
                   <option>Contract</option>
@@ -211,39 +218,40 @@
               </div>
               <div class="form-group">
                 <label>Salary Range</label>
-                <input type="text" class="form-input" placeholder="e.g. $5,000 – $8,000 / month">
+                <input type="text" id="jobSalary" class="form-input" placeholder="e.g. $5,000 – $8,000 / month">
               </div>
             </div>
             <div class="form-group">
               <label>Job Description</label>
-              <textarea class="form-input form-textarea" placeholder="Describe the role, responsibilities, and what makes it exciting..."></textarea>
+              <textarea id="jobDesc" class="form-input form-textarea" placeholder="Describe the role, responsibilities, and what makes it exciting..." required></textarea>
             </div>
             <div class="form-group">
               <label>Requirements</label>
-              <textarea class="form-input form-textarea" placeholder="List specific requirements: minimum experience, certifications, education level, etc."></textarea>
+              <textarea id="jobReqs" class="form-input form-textarea" placeholder="List specific requirements: minimum experience, certifications, education level, etc."></textarea>
             </div>
             <div class="form-group">
               <label>Required Skills</label>
-              <input type="text" class="form-input" placeholder="e.g. React, TypeScript, Node.js (comma separated)">
+              <input type="text" id="jobSkills" class="form-input" placeholder="e.g. React, TypeScript, Node.js (comma separated)">
             </div>
             <div class="form-row">
               <div class="form-group">
                 <label>Application Deadline</label>
-                <input type="date" class="form-input">
+                <input type="date" id="jobDeadline" class="form-input">
               </div>
               <div class="form-group">
                 <label>Posting Status</label>
-                <select class="form-input">
-                  <option>Active</option>
-                  <option>Draft</option>
-                  <option>Closed</option>
+                <select id="jobStatus" class="form-input">
+                  <option value="active">Active</option>
+                  <option value="draft">Draft</option>
+                  <option value="closed">Closed</option>
                 </select>
               </div>
             </div>
             <div class="form-actions">
-              <button class="btn-secondary" onclick="showPage('dashboardPage')"><i class="fas fa-times"></i> Cancel</button>
-              <button class="btn-primary" onclick="alert('Job posted successfully!'); showPage('jobPostingsPage')"><i class="fas fa-paper-plane"></i> Publish Job</button>
+              <button type="button" class="btn-secondary" onclick="showPage('dashboardPage')"><i class="fas fa-times"></i> Cancel</button>
+              <button type="submit" id="postJobBtn" class="btn-primary"><i class="fas fa-paper-plane"></i> Publish Job</button>
             </div>
+            </form>
           </div>
         </div>
 
@@ -288,7 +296,7 @@
             <button class="filter-btn" onclick="setFilter(this)">Interview <span class="filter-count">6</span></button>
             <button class="filter-btn" onclick="setFilter(this)">Rejected <span class="filter-count">12</span></button>
           </div>
-          <div class="applicants-table">
+          <div class="applicants-table" id="applicantList">
             <div class="table-header" style="grid-template-columns: 1.5fr 1fr 0.6fr 0.5fr 0.7fr 0.8fr 1fr;">
               <span>Candidate</span>
               <span>AI Summary</span>
@@ -499,7 +507,7 @@
             </div>
             <button class="btn-primary" onclick="showPage('postJobPage')"><i class="fas fa-plus"></i> Post New Job</button>
           </div>
-          <div class="job-postings-grid">
+          <div class="job-postings-grid" id="jobListings">
             <div class="posting-card">
               <div class="posting-top">
                 <div><div class="posting-title">Frontend Developer</div><div class="posting-meta"><i class="fas fa-code"></i> Engineering · Jakarta, Indonesia</div></div>

@@ -1,4 +1,22 @@
 // =====================
+// THEME TOGGLE
+// =====================
+(function initTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('landingThemeBtn');
+  if (btn) btn.querySelector('i').className = `fas ${saved === 'light' ? 'fa-sun' : 'fa-moon'}`;
+})();
+
+document.getElementById('landingThemeBtn')?.addEventListener('click', function() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  this.querySelector('i').className = `fas ${next === 'light' ? 'fa-sun' : 'fa-moon'}`;
+});
+
+// =====================
 // FLOATING PARTICLES
 // =====================
 const particleContainer = document.getElementById('particles');

@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/jobs');
 const applicantRoutes = require('./routes/applicants');
 const aiRoutes = require('./routes/ai');
+const applicationRoutes = require('./routes/applications');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applicants', applicantRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/applications', applicationRoutes);
 
 if (require.main === module) {
   app.listen(port, () => {
