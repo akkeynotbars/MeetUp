@@ -244,9 +244,16 @@ body {
 ===================== */
 .top-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
+  gap: 1rem;
 }
+.header-left { display: flex; align-items: center; }
+.greeting { display: flex; align-items: center; gap: 0.9rem; }
+.greeting-wave { font-size: 1.6rem; line-height: 1; }
+.greeting-title { font-weight: 700; font-size: 1.05rem; color: var(--text); }
+.greeting-sub { font-size: 0.82rem; color: var(--muted); margin-top: 0.1rem; }
 
 .header-actions {
   display: flex;
