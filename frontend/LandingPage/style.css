@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════
-   MEETUP LANDING PAGE — DARK THEME
+   MEETUP LANDING PAGE — THEME SYSTEM
    ══════════════════════════════════════ */
 
 :root {
@@ -13,6 +13,19 @@
   --muted: #7a7670;
   --accent: #4a9fd4;
   --white: #ffffff;
+  --border-subtle: rgba(255,255,255,0.07);
+  --card-bg: #111318;
+}
+
+[data-theme="light"] {
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --surface2: #eef0f5;
+  --text: #111318;
+  --muted: #6b7280;
+  --orange-glow: rgba(247,148,77,0.18);
+  --border-subtle: rgba(0,0,0,0.09);
+  --card-bg: #ffffff;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,6 +36,7 @@ body {
   color: var(--text);
   font-family: 'DM Sans', sans-serif;
   overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
 }
 
 /* ── NAV ── */
@@ -32,7 +46,25 @@ nav {
   padding: 1.2rem 5vw;
   background: linear-gradient(to bottom, rgba(10,12,16,0.95), transparent);
   backdrop-filter: blur(8px);
+  transition: background 0.3s;
 }
+[data-theme="light"] nav {
+  background: linear-gradient(to bottom, rgba(244,245,248,0.97), transparent);
+}
+.nav-theme-btn {
+  background: none;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+[data-theme="light"] .nav-theme-btn { border-color: rgba(0,0,0,0.12); }
+.nav-theme-btn:hover { color: var(--orange); border-color: var(--orange); background: var(--orange-glow); }
 .logo {
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem; font-weight: 900;

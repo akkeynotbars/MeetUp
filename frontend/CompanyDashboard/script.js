@@ -33,7 +33,7 @@ const API = 'https://bc69-210-211-23-170.ngrok-free.app/api';
 
 function authHeaders() {
   const token = localStorage.getItem('token');
-  return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  return { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1', Authorization: `Bearer ${token}` };
 }
 
 // =====================

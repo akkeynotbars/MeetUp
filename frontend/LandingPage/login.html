@@ -174,7 +174,7 @@
 
       const res = await fetch('https://bc69-210-211-23-170.ngrok-free.app/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' },
         body: JSON.stringify({ email, password, recaptchaToken }),
       });
       const data = await res.json();
