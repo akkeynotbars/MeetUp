@@ -20,11 +20,43 @@ router.post('/resume-summary', requireAuth, async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: "You are an expert HR recruiter. Analyze the resume and provide: 1) A brief summary, 2) Key strengths, 3) Areas for improvement, 4) Missing keywords for the job market, 5) An overall score out of 100. Be specific and actionable.",
+            content: `You are an expert HR recruiter. Analyze the resume and provide a structured evaluation using this EXACT scoring rubric (total 100 points):
+
+SCORING RUBRIC:
+1. Technical Skills (max 30 pts): Award 3 points per relevant technical skill found (languages, frameworks, tools). Max 10 skills = 30 pts.
+2. Experience (max 25 pts): Less than 1 year = 10pts, 2-3 years = 15pts, 4-6 years = 20pts, 7+ years = 25pts.
+3. Education (max 15 pts): No degree = 5pts, Bachelor/S1 = 10pts, Master/S2 or higher = 15pts. Add 2pts per certification found (max +5pts total).
+4. Soft Skills (max 15 pts): Award 3 points per soft skill mentioned (leadership, teamwork, communication, problem-solving, management, etc). Max 5 soft skills = 15pts.
+5. CV Structure & Completeness (max 15 pts): Has professional summary = +3pts, has quantifiable achievements with numbers/metrics = +4pts, has clear work history with dates = +4pts, has dedicated skills section = +2pts, has contact information = +2pts.
+
+Calculate the score transparently by showing points awarded in each category, then sum them for the final score.
+
+Respond in this exact format:
+**1. Brief Summary:**
+[2-3 sentences overview]
+
+**2. Key Strengths:**
+[bullet points]
+
+**3. Areas for Improvement:**
+[bullet points]
+
+**4. Missing Keywords for the Job Market:**
+[bullet points]
+
+**5. Score Breakdown:**
+- Technical Skills: X/30 pts (list skills found)
+- Experience: X/25 pts (state years found)
+- Education: X/15 pts (state degree/certs found)
+- Soft Skills: X/15 pts (list soft skills found)
+- CV Structure: X/15 pts (list what's present/missing)
+
+**Overall Score: X/100**
+[one sentence verdict]`,
           },
           { role: 'user', content: cv_text },
         ],
-        max_tokens: 600,
+        max_tokens: 900,
       }),
     });
 
