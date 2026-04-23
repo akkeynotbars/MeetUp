@@ -274,12 +274,51 @@ async function analyzeResume() {
     });
     const data = await res.json();
     if (!res.ok) { alert(data.error || 'AI error'); return; }
-    const el = document.getElementById('aiSummaryOutput');
-    if (el) el.innerHTML = data.summary.replace(/\n/g, '<br>');
-    const card = document.getElementById('aiSummaryCard');
-    if (card) card.style.display = 'block';
-    const placeholder = document.getElementById('aiPlaceholder');
-    if (placeholder) placeholder.style.display = 'none';
+
+    // Summary text
+    document.getElementById('aiSummaryOutput').textContent = data.summary || '';
+
+    // Final score with animated count-up
+    const total = data.scores?.total || 0;
+    const scoreEl = document.getElementById('aiScoreNumber');
+    let count = 0;
+    const interval = setInterval(() => {
+      count += 2;
+      if (count >= total) { count = total; clearInterval(interval); }
+      scoreEl.textContent = count;
+    }, 20);
+
+    // Score verdict
+    const verdict = total >= 85 ? 'Excellent — ready for senior roles' :
+                    total >= 70 ? 'Good — solid candidate' :
+                    total >= 55 ? 'Average — room to grow' : 'Needs work — let\'s improve this';
+    document.getElementById('aiScoreVerdict').textContent = verdict;
+
+    // Skill progress bars
+    const maxMap = { technical: 30, experience: 25, education: 20, soft_skills: 15, structure: 15 };
+    Object.entries(maxMap).forEach(([key, max]) => {
+      const score = data.scores?.[key] || 0;
+      const pct = Math.round((score / max) * 100);
+      const fill = document.getElementById(`aiFill_${key}`);
+      const pctEl = document.getElementById(`aiPct_${key}`);
+      if (fill) setTimeout(() => { fill.style.width = pct + '%'; }, 300);
+      if (pctEl) pctEl.textContent = pct + '%';
+      const card = document.getElementById(`aiCard_${key}`);
+      if (card) card.dataset.level = pct >= 80 ? 'high' : pct >= 50 ? 'mid' : 'low';
+    });
+
+    // Improvements
+    const impEl = document.getElementById('aiImprovements');
+    if (impEl) impEl.innerHTML = (data.improvements || []).map(i =>
+      `<li class="activity-item"><span class="activity-desc">${i}</span></li>`).join('');
+
+    // Missing keywords as pill badges
+    const kwEl = document.getElementById('aiKeywords');
+    if (kwEl) kwEl.innerHTML = (data.missing_keywords || []).map(k =>
+      `<span class="skill-gap-tag">${k}</span>`).join('');
+
+    document.getElementById('aiSummaryCard').style.display = 'block';
+    document.getElementById('aiPlaceholder').style.display = 'none';
   } catch (e) {
     console.error(e);
     alert('Cannot connect to server.');

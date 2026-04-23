@@ -247,12 +247,76 @@
           </div>
 
           <!-- AI Career Feedback Section (FR-11) -->
-          <div id="aiSummaryCard" class="recent-card" style="margin-top:1.5rem;display:none;">
-            <div class="recent-header">
-              <h3><i class="fas fa-robot"></i> AI Resume Analysis</h3>
-              <button class="btn-primary btn-sm" onclick="analyzeResume()"><i class="fas fa-sync"></i> Re-analyze</button>
+          <div id="aiSummaryCard" style="margin-top:1.5rem;display:none;">
+
+            <!-- Final Score + Summary -->
+            <div class="recent-card ai-result-header">
+              <div class="ai-score-block">
+                <div class="ai-score-ring">
+                  <span class="ai-score-number" id="aiScoreNumber">0</span>
+                  <span class="ai-score-label">/ 100</span>
+                </div>
+                <div class="ai-score-verdict" id="aiScoreVerdict"></div>
+              </div>
+              <div class="ai-summary-text" id="aiSummaryOutput"></div>
+              <button class="btn-primary btn-sm" onclick="analyzeResume()" style="align-self:flex-start;white-space:nowrap;"><i class="fas fa-sync"></i> Re-analyze</button>
             </div>
-            <div id="aiSummaryOutput" style="line-height:1.8;color:var(--text);font-size:0.9rem;white-space:pre-wrap;"></div>
+
+            <!-- Skill Progress Cards -->
+            <div class="ai-skill-cards" id="aiSkillCards">
+              <div class="ai-skill-card" id="aiCard_technical">
+                <div class="ai-skill-icon"><i class="fas fa-code"></i></div>
+                <div class="ai-skill-info">
+                  <div class="ai-skill-name">Technical Skills</div>
+                  <div class="ai-skill-bar"><div class="ai-skill-fill" id="aiFill_technical"></div></div>
+                </div>
+                <div class="ai-skill-pct" id="aiPct_technical">0%</div>
+              </div>
+              <div class="ai-skill-card" id="aiCard_experience">
+                <div class="ai-skill-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="ai-skill-info">
+                  <div class="ai-skill-name">Experience</div>
+                  <div class="ai-skill-bar"><div class="ai-skill-fill" id="aiFill_experience"></div></div>
+                </div>
+                <div class="ai-skill-pct" id="aiPct_experience">0%</div>
+              </div>
+              <div class="ai-skill-card" id="aiCard_education">
+                <div class="ai-skill-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="ai-skill-info">
+                  <div class="ai-skill-name">Education</div>
+                  <div class="ai-skill-bar"><div class="ai-skill-fill" id="aiFill_education"></div></div>
+                </div>
+                <div class="ai-skill-pct" id="aiPct_education">0%</div>
+              </div>
+              <div class="ai-skill-card" id="aiCard_soft_skills">
+                <div class="ai-skill-icon"><i class="fas fa-users"></i></div>
+                <div class="ai-skill-info">
+                  <div class="ai-skill-name">Soft Skills</div>
+                  <div class="ai-skill-bar"><div class="ai-skill-fill" id="aiFill_soft_skills"></div></div>
+                </div>
+                <div class="ai-skill-pct" id="aiPct_soft_skills">0%</div>
+              </div>
+              <div class="ai-skill-card" id="aiCard_structure">
+                <div class="ai-skill-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="ai-skill-info">
+                  <div class="ai-skill-name">CV Structure</div>
+                  <div class="ai-skill-bar"><div class="ai-skill-fill" id="aiFill_structure"></div></div>
+                </div>
+                <div class="ai-skill-pct" id="aiPct_structure">0%</div>
+              </div>
+            </div>
+
+            <!-- Improvements + Missing Keywords -->
+            <div class="two-col" style="margin-top:1rem;">
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-arrow-up"></i> What to Improve</h3></div>
+                <ul class="activity-list" id="aiImprovements"></ul>
+              </div>
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-key"></i> Missing Keywords</h3></div>
+                <div id="aiKeywords" style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.5rem 0;"></div>
+              </div>
+            </div>
           </div>
 
           <!-- Placeholder shown before any analysis -->

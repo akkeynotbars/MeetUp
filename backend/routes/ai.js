@@ -20,33 +20,28 @@ router.post('/resume-summary', requireAuth, async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: `You are a friendly senior colleague who just read someone's resume and is giving them honest, warm, personal feedback over coffee. Write like a real person — conversational, direct, occasionally using casual phrases. No corporate speak, no stiff bullet points for everything. Mix short paragraphs with occasional lists where it makes sense naturally.
+            content: `You are a friendly senior HR colleague analyzing a resume. Use this scoring rubric internally (never reveal individual scores to the user):
+- Technical Skills: 3pts per relevant skill found (languages, frameworks, tools), max 30pts
+- Experience: <1yr=10pts, 2-3yr=15pts, 4-6yr=20pts, 7+yr=25pts
+- Education: no degree=5pts, bachelor=10pts, master=15pts, +2pts per certification (max +5pts bonus)
+- Soft Skills: 3pts per soft skill found (leadership, teamwork, communication, etc), max 15pts
+- CV Structure: has summary=+3, has metrics/numbers=+4, clear work history with dates=+4, skills section=+2, contact info=+2, max 15pts
 
-Use this scoring rubric internally to calculate the score (don't show the rubric itself, just the result):
-- Technical Skills: 3pts per skill found, max 30pts
-- Experience: <1yr=10, 2-3yr=15, 4-6yr=20, 7+yr=25pts
-- Education: no degree=5, bachelor=10, master=15, +2 per cert (max +5)
-- Soft Skills: 3pts per soft skill, max 15pts
-- CV Structure: summary=+3, metrics/numbers=+4, clear work history=+4, skills section=+2, contact info=+2 (max 15pts)
-
-Write your response like this (no bold headers, just natural flow):
-
-Start with a warm 2-3 sentence first impression — what stood out, what's the vibe of this CV.
-
-Then talk about what's working well — genuinely highlight 2-3 things that are solid.
-
-Then be honest about what's holding them back — be direct but encouraging, like a friend who wants them to improve.
-
-Then mention 3-4 specific keywords or skills that are missing that recruiters actually look for in this field.
-
-Then end with the score breakdown in a casual way, like:
-"Here's how I'd break down the score:
-— Skills: X/30
-— Experience: X/25
-— Education: X/15
-— Soft skills: X/15
-— CV structure: X/15
-Total: X/100 — [one punchy honest sentence about where they stand]"`,
+Calculate all scores internally, then respond ONLY with valid JSON (no markdown, no explanation outside the JSON):
+{
+  "summary": "2-3 warm conversational sentences about the overall impression, like a friend giving feedback",
+  "strengths": ["strength 1", "strength 2", "strength 3"],
+  "improvements": ["improvement 1", "improvement 2", "improvement 3"],
+  "missing_keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
+  "scores": {
+    "technical": <0-30>,
+    "experience": <0-25>,
+    "education": <0-20>,
+    "soft_skills": <0-15>,
+    "structure": <0-15>,
+    "total": <0-100>
+  }
+}`,
           },
           { role: 'user', content: cv_text },
         ],
@@ -60,8 +55,9 @@ Total: X/100 — [one punchy honest sentence about where they stand]"`,
       throw new Error('Groq error');
     }
     const data = await response.json();
-    const summary = data.choices?.[0]?.message?.content || '';
-    res.json({ summary });
+    const raw = data.choices?.[0]?.message?.content || '{}';
+    const result = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    res.json(result);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'AI service unavailable' });
