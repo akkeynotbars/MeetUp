@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // =====================
 // API HELPERS
 // =====================
-const API = 'http://localhost:3000/api';
+const API = 'https://bc69-210-211-23-170.ngrok-free.app/api';
 
 function authHeaders() {
   const token = localStorage.getItem('token');
