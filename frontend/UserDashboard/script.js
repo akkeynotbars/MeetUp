@@ -48,7 +48,7 @@ async function loadJobs() {
   const grid = document.getElementById('jobListingsGrid');
   if (!grid) return;
   try {
-    const res = await fetch(`${API}/jobs`);
+    const res = await fetch(`${API}/jobs`, { headers: { 'ngrok-skip-browser-warning': '1' } });
     const data = await res.json();
     if (!data.jobs || data.jobs.length === 0) {
       grid.innerHTML = '<p style="color:#5b6f94">No active jobs yet.</p>';
