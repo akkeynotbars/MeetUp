@@ -1,4 +1,139 @@
 // =====================
+// THEME (dark / light)
+// =====================
+(function initTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const icon = saved === 'light' ? 'fa-sun' : 'fa-moon';
+  document.querySelectorAll('#themeToggleBtn i, #themeToggleHeader i').forEach(el => {
+    el.className = `fas ${icon}`;
+  });
+})();
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  const icon = next === 'light' ? 'fa-sun' : 'fa-moon';
+  document.querySelectorAll('#themeToggleBtn i, #themeToggleHeader i').forEach(el => {
+    el.className = `fas ${icon}`;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
+  document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+});
+
+// =====================
+// API HELPERS
+// =====================
+const API = 'http://localhost:3000/api';
+function authHeaders() {
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` };
+}
+
+// =====================
+// JOBS — load real jobs from DB
+// =====================
+async function loadJobs() {
+  const grid = document.getElementById('jobListingsGrid');
+  if (!grid) return;
+  try {
+    const res = await fetch(`${API}/jobs`);
+    const data = await res.json();
+    if (!data.jobs || data.jobs.length === 0) {
+      grid.innerHTML = '<p style="color:#5b6f94">No active jobs yet.</p>';
+      return;
+    }
+    const colors = ['#4285f4','#00aa5b','#f7944d','#e94235','#9b59b6','#1abc9c'];
+    grid.innerHTML = data.jobs.map((j, i) => {
+      const letter = (j.Companies?.name || j.title || '?')[0].toUpperCase();
+      const color = colors[i % colors.length];
+      return `
+        <div class="job-listing-card">
+          <div class="jl-top">
+            <div class="jl-company-icon" style="background:${color}">${letter}</div>
+            <div>
+              <div class="jl-title">${j.title}</div>
+              <div class="jl-company">${j.Companies?.name || 'Company'} · ${j.location || 'Remote'}</div>
+            </div>
+          </div>
+          <div class="jl-tags"><span class="jl-tag">${j.job_type || 'Full-time'}</span></div>
+          <div class="jl-salary"><i class="fas fa-dollar-sign"></i> ${j.salary_range || 'Salary TBD'}</div>
+          ${j.description ? `<p style="color:#8a9bbf;font-size:0.85rem;margin:0.6rem 0">${j.description.slice(0, 100)}...</p>` : ''}
+          <div class="jl-footer">
+            <span></span>
+            <button class="btn-primary btn-sm" onclick="applyToJob('${j.id}', '${j.title.replace(/'/g, '')}')">
+              <i class="fas fa-paper-plane"></i> Apply
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch {
+    grid.innerHTML = '<p style="color:#5b6f94">Cannot load jobs — make sure backend is running.</p>';
+  }
+}
+
+async function applyToJob(jobId, jobTitle) {
+  if (!confirm(`Apply to "${jobTitle}"?`)) return;
+  try {
+    const res = await fetch(`${API}/applications`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ job_id: jobId }),
+    });
+    const data = await res.json();
+    if (res.ok) alert(`Applied to "${jobTitle}" successfully!`);
+    else alert(data.error || 'Failed to apply.');
+  } catch {
+    alert('Cannot connect to server.');
+  }
+}
+
+// =====================
+// MY APPLICATIONS (FR-09)
+// =====================
+async function loadMyApplications() {
+  const container = document.getElementById('myApplicationsList');
+  if (!container) return;
+  container.innerHTML = '<p style="color:var(--muted);padding:1rem">Loading...</p>';
+  try {
+    const res = await fetch(`${API}/applications/my`, { headers: authHeaders() });
+    const data = await res.json();
+    if (!res.ok) { container.innerHTML = `<p style="color:#f87171;padding:1rem">${data.error}</p>`; return; }
+    if (!data.applications?.length) {
+      container.innerHTML = '<p style="color:var(--muted);padding:1rem">No applications yet. Browse jobs and apply!</p>'; return;
+    }
+    const statusClass = s => s === 'shortlisted' ? 's-shortlisted' : s === 'rejected' ? 's-rejected' : s === 'pending' ? 's-new' : 's-interview';
+    container.innerHTML = data.applications.map(a => `
+      <div class="job-listing-card" style="margin-bottom:1rem">
+        <div class="jl-top">
+          <div class="jl-company-icon" style="background:#f7944d">${(a.Jobs?.title||'?')[0].toUpperCase()}</div>
+          <div>
+            <div class="jl-title">${a.Jobs?.title || 'Unknown Job'}</div>
+            <div class="jl-company">${a.Jobs?.Companies?.name || 'Company'} · ${a.Jobs?.location || 'Remote'}</div>
+          </div>
+          <span class="status-badge ${statusClass(a.status)}" style="margin-left:auto">${a.status}</span>
+        </div>
+        <div class="jl-tags"><span class="jl-tag">${a.Jobs?.job_type || 'Full-time'}</span></div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:0.4rem">Applied ${new Date(a.created_at).toLocaleDateString()}</div>
+      </div>`).join('');
+  } catch { container.innerHTML = '<p style="color:var(--muted);padding:1rem">Cannot connect — backend offline.</p>'; }
+}
+
+// Load jobs when Jobs page is shown
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-item[data-page="jobsPage"]').forEach(btn => {
+    btn.addEventListener('click', loadJobs);
+  });
+  document.querySelectorAll('.nav-item[data-page="applicationsPage"]').forEach(btn => {
+    btn.addEventListener('click', loadMyApplications);
+  });
+});
+
+// =====================
 // PAGE NAVIGATION
 // =====================
 function showPage(pageId) {
@@ -100,23 +235,36 @@ function removeCV() {
   document.getElementById('cvFileInput').value = '';
 }
 
-function analyzeResume() {
-  alert('AI is analyzing your resume... Summary, score, and feedback will be generated within 5 seconds.');
+async function analyzeResume() {
+  const fileInput = document.getElementById('cvFileInput');
+  if (!fileInput?.files?.length) { alert('Please upload a CV file first.'); return; }
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const cv_text = e.target.result;
+    const btn = document.getElementById('analyzeBtn');
+    if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...'; btn.disabled = true; }
+    try {
+      const res = await fetch(`${API}/ai/resume-summary`, {
+        method: 'POST', headers: authHeaders(), body: JSON.stringify({ cv_text }),
+      });
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || 'AI error'); return; }
+      const el = document.getElementById('aiSummaryOutput');
+      if (el) el.innerHTML = data.summary.replace(/\n/g, '<br>');
+      const card = document.getElementById('aiSummaryCard');
+      if (card) card.style.display = 'block';
+      const placeholder = document.getElementById('aiPlaceholder');
+      if (placeholder) placeholder.style.display = 'none';
+    } catch { alert('Cannot connect to server.'); }
+    finally { if (btn) { btn.innerHTML = '<i class="fas fa-robot"></i> Analyze with AI'; btn.disabled = false; } }
+  };
+  reader.readAsText(file);
 }
 
 // =====================
 // JOB APPLICATION (FR-09)
-// =====================
-const appliedJobs = new Set();
-function applyToJob(title, company) {
-  const key = title + '@' + company;
-  if (appliedJobs.has(key)) {
-    alert('You have already applied for this position.');
-    return;
-  }
-  appliedJobs.add(key);
-  alert('Application submitted for ' + title + ' at ' + company + '! Check your Applications page to track status.');
-}
+// (applyToJob is defined above using the real API)
 
 // =====================
 // FILTER BUTTONS
