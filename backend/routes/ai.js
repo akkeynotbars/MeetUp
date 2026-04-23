@@ -4,35 +4,40 @@ const { requireAuth } = require('../middleware/auth');
 const { requireRole } = require('../middleware/role');
 
 // POST /api/ai/resume-summary — summarize a CV (FR-04)
-router.post('/resume-summary', requireAuth, requireRole('company'), async (req, res) => {
+router.post('/resume-summary', requireAuth, async (req, res) => {
   const { cv_text } = req.body;
   if (!cv_text) return res.status(400).json({ error: 'cv_text is required' });
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'llama-3.1-8b-instant',
         messages: [
           {
             role: 'system',
-            content: "You are an expert HR recruiter. Summarize the resume in 3-4 concise bullet points covering key skills, experience level, and notable achievements.",
+            content: "You are an expert HR recruiter. Analyze the resume and provide: 1) A brief summary, 2) Key strengths, 3) Areas for improvement, 4) Missing keywords for the job market, 5) An overall score out of 100. Be specific and actionable.",
           },
           { role: 'user', content: cv_text },
         ],
-        max_tokens: 300,
+        max_tokens: 600,
       }),
     });
 
-    if (!response.ok) throw new Error('OpenAI error');
+    if (!response.ok) {
+      const err = await response.json();
+      console.error('Groq error:', err);
+      throw new Error('Groq error');
+    }
     const data = await response.json();
     const summary = data.choices?.[0]?.message?.content || '';
     res.json({ summary });
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'AI service unavailable' });
   }
 });

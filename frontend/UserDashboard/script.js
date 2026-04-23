@@ -235,31 +235,57 @@ function removeCV() {
   document.getElementById('cvFileInput').value = '';
 }
 
+async function extractTextFromFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  const arrayBuffer = await file.arrayBuffer();
+
+  if (ext === 'docx') {
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  }
+
+  if (ext === 'pdf') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      text += content.items.map(item => item.str).join(' ') + '\n';
+    }
+    return text;
+  }
+
+  return new TextDecoder().decode(arrayBuffer);
+}
+
 async function analyzeResume() {
   const fileInput = document.getElementById('cvFileInput');
   if (!fileInput?.files?.length) { alert('Please upload a CV file first.'); return; }
   const file = fileInput.files[0];
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const cv_text = e.target.result;
-    const btn = document.getElementById('analyzeBtn');
-    if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...'; btn.disabled = true; }
-    try {
-      const res = await fetch(`${API}/ai/resume-summary`, {
-        method: 'POST', headers: authHeaders(), body: JSON.stringify({ cv_text }),
-      });
-      const data = await res.json();
-      if (!res.ok) { alert(data.error || 'AI error'); return; }
-      const el = document.getElementById('aiSummaryOutput');
-      if (el) el.innerHTML = data.summary.replace(/\n/g, '<br>');
-      const card = document.getElementById('aiSummaryCard');
-      if (card) card.style.display = 'block';
-      const placeholder = document.getElementById('aiPlaceholder');
-      if (placeholder) placeholder.style.display = 'none';
-    } catch { alert('Cannot connect to server.'); }
-    finally { if (btn) { btn.innerHTML = '<i class="fas fa-robot"></i> Analyze with AI'; btn.disabled = false; } }
-  };
-  reader.readAsText(file);
+  const btn = document.getElementById('analyzeBtn');
+  if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...'; btn.disabled = true; }
+  try {
+    const cv_text = await extractTextFromFile(file);
+    if (!cv_text.trim()) { alert('Could not extract text from file. Please try a different file.'); return; }
+
+    const res = await fetch(`${API}/ai/resume-summary`, {
+      method: 'POST', headers: authHeaders(), body: JSON.stringify({ cv_text }),
+    });
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'AI error'); return; }
+    const el = document.getElementById('aiSummaryOutput');
+    if (el) el.innerHTML = data.summary.replace(/\n/g, '<br>');
+    const card = document.getElementById('aiSummaryCard');
+    if (card) card.style.display = 'block';
+    const placeholder = document.getElementById('aiPlaceholder');
+    if (placeholder) placeholder.style.display = 'none';
+  } catch (e) {
+    console.error(e);
+    alert('Cannot connect to server.');
+  } finally {
+    if (btn) { btn.innerHTML = '<i class="fas fa-robot"></i> Analyze with AI'; btn.disabled = false; }
+  }
 }
 
 // =====================
