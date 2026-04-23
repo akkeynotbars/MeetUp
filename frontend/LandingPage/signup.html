@@ -11,6 +11,7 @@
   <!-- External -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js?render=6LfAnMUsAAAAAOxfBp9I5KCa10F7VA064716AlEZ"></script>
 
   <!-- Page-specific styles (signup only) -->
   <style>
@@ -93,6 +94,9 @@
 </head>
 <body>
 
+<!-- Theme toggle -->
+<button class="auth-theme-btn" id="authThemeBtn" title="Toggle theme"><i class="fas fa-moon"></i></button>
+
 <div class="particles" id="particles"></div>
 
 <nav>
@@ -157,14 +161,6 @@
         <input type="password" id="password" placeholder="Create a strong password" required>
       </div>
 
-      <div class="captcha-box">
-        <label class="captcha-label">
-          <input type="checkbox" id="captchaCheck" required>
-          <span>I'm not a robot</span>
-        </label>
-        <span class="captcha-badge">reCAPTCHA</span>
-      </div>
-
       <button class="auth-btn" id="signupBtn">Create Account</button>
     </form>
 
@@ -176,6 +172,21 @@
 
 <!-- Shared helpers (particles) -->
 <script src="../shared/auth.js"></script>
+<script>
+  // Theme init
+  (function(){
+    const t = localStorage.getItem('theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    const btn = document.getElementById('authThemeBtn');
+    if (btn) btn.querySelector('i').className = `fas ${t === 'light' ? 'fa-sun' : 'fa-moon'}`;
+  })();
+  document.getElementById('authThemeBtn')?.addEventListener('click', function(){
+    const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    this.querySelector('i').className = `fas ${next === 'light' ? 'fa-sun' : 'fa-moon'}`;
+  });
+</script>
 
 <script>
   // Spawn floating particles
@@ -207,10 +218,12 @@
     btn.style.opacity = '0.7';
 
     try {
+      const recaptchaToken = await grecaptcha.execute('6LfAnMUsAAAAAOxfBp9I5KCa10F7VA064716AlEZ', { action: 'signup' });
+
       const res = await fetch('http://localhost:3000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role: selectedRole, company_name, industry }),
+        body: JSON.stringify({ name, email, password, role: selectedRole, company_name, industry, recaptchaToken }),
       });
       const data = await res.json();
 

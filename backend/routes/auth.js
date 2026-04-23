@@ -5,9 +5,24 @@ const { hashPassword, verifyPassword } = require('../utils/password');
 const { signToken } = require('../utils/jwt');
 const { requireAuth } = require('../middleware/auth');
 
+async function verifyRecaptcha(token) {
+  const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `secret=${process.env.RECAPTCHA_SECRET}&response=${token}`,
+  });
+  const data = await res.json();
+  return data.success && data.score >= 0.5;
+}
+
 // POST /api/auth/signup
 router.post('/signup', async (req, res) => {
-  const { name, email, password, role, company_name, industry } = req.body;
+  const { name, email, password, role, company_name, industry, recaptchaToken } = req.body;
+
+  if (recaptchaToken) {
+    const ok = await verifyRecaptcha(recaptchaToken);
+    if (!ok) return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+  }
 
   if (!name || !email || !password || !role) {
     return res.status(400).json({ error: 'Name, email, password, and role are required' });
@@ -50,7 +65,12 @@ router.post('/signup', async (req, res) => {
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body;
+
+  if (recaptchaToken) {
+    const ok = await verifyRecaptcha(recaptchaToken);
+    if (!ok) return res.status(400).json({ error: 'reCAPTCHA verification failed. Please try again.' });
+  }
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
