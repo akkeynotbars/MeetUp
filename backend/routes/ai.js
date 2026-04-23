@@ -3,10 +3,79 @@ const router = express.Router();
 const { requireAuth } = require('../middleware/auth');
 const { requireRole } = require('../middleware/role');
 
+// =====================
+// DETERMINISTIC SCORING ENGINE
+// =====================
+function calculateScore(text) {
+  const t = text.toLowerCase();
+
+  // 1. Technical Skills (max 30) — 3pts per skill found
+  const techSkills = [
+    'javascript','typescript','python','java','php','c++','c#','ruby','go','rust','swift','kotlin',
+    'react','vue','angular','next.js','nuxt','svelte','node.js','express','django','laravel','spring',
+    'html','css','sass','tailwind','bootstrap','jquery',
+    'sql','mysql','postgresql','mongodb','redis','firebase','supabase',
+    'docker','kubernetes','aws','azure','gcp','linux','git','ci/cd','rest api','graphql',
+    'machine learning','tensorflow','pytorch','data analysis','pandas','numpy',
+  ];
+  const foundTech = techSkills.filter(s => t.includes(s));
+  const technicalScore = Math.min(foundTech.length * 3, 30);
+
+  // 2. Experience (max 25)
+  let experienceScore = 10;
+  const yearMatches = t.match(/(\d+)\+?\s*years?/g) || [];
+  const maxYears = yearMatches.reduce((max, m) => {
+    const n = parseInt(m); return n > max ? n : max;
+  }, 0);
+  if (maxYears >= 7) experienceScore = 25;
+  else if (maxYears >= 4) experienceScore = 20;
+  else if (maxYears >= 2) experienceScore = 15;
+  else if (maxYears >= 1) experienceScore = 12;
+
+  // 3. Education (max 20)
+  let educationScore = 5;
+  if (t.includes('master') || t.includes('s2') || t.includes('msc') || t.includes('m.sc') || t.includes('mba')) educationScore = 15;
+  else if (t.includes('bachelor') || t.includes('s1') || t.includes('bsc') || t.includes('b.sc') || t.includes('sarjana')) educationScore = 10;
+  const certCount = (t.match(/certif|certified|aws certified|google certified|microsoft certified|comptia/g) || []).length;
+  educationScore = Math.min(educationScore + certCount * 2, 20);
+
+  // 4. Soft Skills (max 15) — 3pts per soft skill
+  const softSkills = [
+    'leadership','teamwork','communication','collaboration','problem.solving','adaptability',
+    'management','mentoring','presentation','negotiation','critical thinking','time management',
+    'organized','initiative','motivated','analytical',
+  ];
+  const foundSoft = softSkills.filter(s => new RegExp(s).test(t));
+  const softScore = Math.min(foundSoft.length * 3, 15);
+
+  // 5. CV Structure (max 15)
+  let structureScore = 0;
+  if (t.includes('summary') || t.includes('objective') || t.includes('profile') || t.includes('about me')) structureScore += 3;
+  if (/\d+%|\d+x|\$\d+|\d+ (users|clients|projects|teams|members)/.test(t)) structureScore += 4;
+  if (/20\d\d\s*[-–]\s*(20\d\d|present|current|now)/.test(t)) structureScore += 4;
+  if (t.includes('skill') || t.includes('technology') || t.includes('tools')) structureScore += 2;
+  if (t.includes('@') || t.includes('phone') || t.includes('linkedin') || /\+\d{5,}/.test(t)) structureScore += 2;
+
+  const total = technicalScore + experienceScore + educationScore + softScore + structureScore;
+
+  return {
+    technical: technicalScore,
+    experience: experienceScore,
+    education: educationScore,
+    soft_skills: softScore,
+    structure: structureScore,
+    total,
+    foundTech: foundTech.slice(0, 10),
+  };
+}
+
 // POST /api/ai/resume-summary — summarize a CV (FR-04)
 router.post('/resume-summary', requireAuth, async (req, res) => {
   const { cv_text } = req.body;
   if (!cv_text) return res.status(400).json({ error: 'cv_text is required' });
+
+  // Calculate score deterministically
+  const scores = calculateScore(cv_text);
 
   try {
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -20,34 +89,19 @@ router.post('/resume-summary', requireAuth, async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: `You are a friendly senior HR colleague analyzing a resume. Use this scoring rubric internally (never reveal individual scores to the user):
-- Technical Skills: 3pts per relevant skill found (languages, frameworks, tools), max 30pts
-- Experience: <1yr=10pts, 2-3yr=15pts, 4-6yr=20pts, 7+yr=25pts
-- Education: no degree=5pts, bachelor=10pts, master=15pts, +2pts per certification (max +5pts bonus)
-- Soft Skills: 3pts per soft skill found (leadership, teamwork, communication, etc), max 15pts
-- CV Structure: has summary=+3, has metrics/numbers=+4, clear work history with dates=+4, skills section=+2, contact info=+2, max 15pts
+            content: `You are a friendly senior HR colleague giving honest, warm resume feedback like a friend over coffee. Be specific, direct, and encouraging — no corporate speak.
 
-Calculate all scores internally, then respond ONLY with valid JSON (no markdown, no explanation outside the JSON):
+Respond ONLY with valid JSON (no markdown):
 {
-  "summary": "2-3 warm conversational sentences about the overall impression, like a friend giving feedback",
-  "strengths": ["strength 1", "strength 2", "strength 3"],
-  "improvements": ["improvement 1", "improvement 2", "improvement 3"],
-  "missing_keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
-  "scores": {
-    "technical": <0-30>,
-    "experience": <0-25>,
-    "education": <0-20>,
-    "soft_skills": <0-15>,
-    "structure": <0-15>,
-    "total": <0-100>
-  }
+  "summary": "2-3 casual, warm sentences about the overall impression of this person's profile",
+  "improvements": ["specific actionable tip 1", "specific actionable tip 2", "specific actionable tip 3"],
+  "missing_keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"]
 }`,
           },
           { role: 'user', content: cv_text },
         ],
-        max_tokens: 900,
-        temperature: 0,
-        seed: 42,
+        max_tokens: 600,
+        temperature: 0.2,
       }),
     });
 
@@ -56,10 +110,12 @@ Calculate all scores internally, then respond ONLY with valid JSON (no markdown,
       console.error('Groq error:', err);
       throw new Error('Groq error');
     }
+
     const data = await response.json();
     const raw = data.choices?.[0]?.message?.content || '{}';
-    const result = JSON.parse(raw.replace(/```json|```/g, '').trim());
-    res.json(result);
+    const aiResult = JSON.parse(raw.replace(/```json|```/g, '').trim());
+
+    res.json({ ...aiResult, scores });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'AI service unavailable' });
@@ -73,37 +129,38 @@ router.post('/score', requireAuth, requireRole('company'), async (req, res) => {
     return res.status(400).json({ error: 'cv_text and job_requirements are required' });
   }
 
-  const prompt = `You are a hiring assistant. Score the following resume against the job requirements.
+  const scores = calculateScore(cv_text);
 
-Job Requirements:
-${job_requirements}
+  const prompt = `You are a hiring assistant. Based on this resume and job requirements, provide strengths and red flags.
 
-Resume:
-${cv_text}
+Job Requirements: ${job_requirements}
+Resume: ${cv_text}
 
-Respond ONLY with valid JSON in this exact format (no markdown, no extra text):
-{"score":<0-100>,"red_flags":[<up to 3 strings>],"strengths":[<up to 3 strings>]}`;
+Respond ONLY with valid JSON:
+{"red_flags":["flag1","flag2"],"strengths":["strength1","strength2"]}`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
-        max_tokens: 250,
+        max_tokens: 300,
+        temperature: 0,
       }),
     });
 
-    if (!response.ok) throw new Error('OpenAI error');
+    if (!response.ok) throw new Error('Groq error');
     const data = await response.json();
     const raw = data.choices?.[0]?.message?.content || '{}';
-    const result = JSON.parse(raw);
-    res.json(result);
-  } catch {
+    const result = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    res.json({ ...result, score: scores.total });
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'AI service unavailable' });
   }
 });
