@@ -46,6 +46,8 @@ Calculate all scores internally, then respond ONLY with valid JSON (no markdown,
           { role: 'user', content: cv_text },
         ],
         max_tokens: 900,
+        temperature: 0,
+        seed: 42,
       }),
     });
 
