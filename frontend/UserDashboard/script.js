@@ -299,7 +299,6 @@ async function analyzeResume() {
 
     // Final score with animated count-up
     const scoreEl = document.getElementById('aiScoreNumber');
-    const total = data.scores?.total || 0;
     let count = 0;
     const interval = setInterval(() => {
       count += 2;
