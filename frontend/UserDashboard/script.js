@@ -24,6 +24,13 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
   document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+
+  // Populate name from logged-in user
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user.name) {
+    const cvName = document.getElementById('cvName');
+    if (cvName) cvName.textContent = user.name;
+  }
 });
 
 // =====================
@@ -275,12 +282,24 @@ async function analyzeResume() {
     const data = await res.json();
     if (!res.ok) { alert(data.error || 'AI error'); return; }
 
+    // Update Current CV card
+    const total = data.scores?.total || 0;
+    const cvScoreNum = document.getElementById('cvScoreNum');
+    if (cvScoreNum) cvScoreNum.textContent = total;
+    const cvSkills = document.getElementById('cvSkills');
+    if (cvSkills) cvSkills.textContent = data.scores?.foundTech?.slice(0, 5).join(', ') || 'No tech skills detected';
+    const cvGrade = document.getElementById('cvGrade');
+    if (cvGrade) {
+      const grade = total >= 85 ? 'Senior' : total >= 70 ? 'Mid-Level' : total >= 50 ? 'Junior' : 'Entry-Level';
+      cvGrade.textContent = grade;
+    }
+
     // Summary text
     document.getElementById('aiSummaryOutput').textContent = data.summary || '';
 
     // Final score with animated count-up
-    const total = data.scores?.total || 0;
     const scoreEl = document.getElementById('aiScoreNumber');
+    const total = data.scores?.total || 0;
     let count = 0;
     const interval = setInterval(() => {
       count += 2;
