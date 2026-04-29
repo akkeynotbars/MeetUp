@@ -165,4 +165,61 @@ Respond ONLY with valid JSON:
   }
 });
 
+// POST /api/ai/match — hiring probability: how well does this user's CV match a job? (FR-10)
+router.post('/match', requireAuth, async (req, res) => {
+  const { job_id } = req.body;
+  if (!job_id) return res.status(400).json({ error: 'job_id is required' });
+
+  // Fetch user's stored CV text
+  const supabase = require('../config/supabase');
+  const { data: cv } = await supabase
+    .from('CVs')
+    .select('cv_text, ai_score')
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+
+  if (!cv?.cv_text) {
+    return res.json({ match_percentage: null, message: 'Upload and analyze your CV first to see match score.' });
+  }
+
+  // Fetch job requirements
+  const { data: job } = await supabase
+    .from('Jobs')
+    .select('title, description, requirements')
+    .eq('id', job_id)
+    .maybeSingle();
+
+  if (!job) return res.status(404).json({ error: 'Job not found' });
+
+  // Deterministic keyword match (fast, free, consistent)
+  const jobText = `${job.title} ${job.description || ''} ${job.requirements || ''}`.toLowerCase();
+  const cvText = cv.cv_text.toLowerCase();
+
+  // Extract meaningful words from job (3+ chars, not stopwords)
+  const stopwords = new Set(['the','and','for','are','with','this','that','have','from','been','will','can','our','you','your','their','they','but','not','was','its','has','who','what','how','all','any','use','using','new','one','also','which','more']);
+  const jobWords = [...new Set(
+    jobText.match(/[a-z][a-z+#.]{2,}/g)?.filter(w => !stopwords.has(w)) || []
+  )];
+
+  if (jobWords.length === 0) return res.json({ match_percentage: 50, matched_skills: [], missing_skills: [] });
+
+  const matched = jobWords.filter(w => cvText.includes(w));
+  const missing = jobWords.filter(w => !cvText.includes(w)).slice(0, 8);
+
+  // Base match from keyword overlap
+  let match = Math.round((matched.length / jobWords.length) * 100);
+
+  // Bonus: user's overall AI score boosts confidence (up to +10)
+  if (cv.ai_score) match = Math.min(match + Math.round(cv.ai_score / 10), 95);
+
+  // Floor at 10% so it never shows 0
+  match = Math.max(match, 10);
+
+  res.json({
+    match_percentage: match,
+    matched_skills: matched.slice(0, 8),
+    missing_skills: missing,
+  });
+});
+
 module.exports = router;

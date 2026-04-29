@@ -87,11 +87,15 @@ async function loadJobs() {
       return;
     }
     const colors = ['#4285f4','#00aa5b','#f7944d','#e94235','#9b59b6','#1abc9c'];
+    const hasCv = localStorage.getItem('cvAnalyzed') === '1';
     grid.innerHTML = data.jobs.map((j, i) => {
       const letter = (j.Companies?.name || j.title || '?')[0].toUpperCase();
       const color = colors[i % colors.length];
+      const matchBadge = hasCv
+        ? `<span class="match-badge" id="match-${j.id}" style="font-size:0.75rem;color:#888;"><i class="fas fa-spinner fa-spin"></i></span>`
+        : `<span style="font-size:0.72rem;color:#5b6f94;">Upload CV to see match</span>`;
       return `
-        <div class="job-listing-card">
+        <div class="job-listing-card" id="jobcard-${j.id}">
           <div class="jl-top">
             <div class="jl-company-icon" style="background:${color}">${letter}</div>
             <div>
@@ -103,13 +107,32 @@ async function loadJobs() {
           <div class="jl-salary"><i class="fas fa-dollar-sign"></i> ${j.salary_range || 'Salary TBD'}</div>
           ${j.description ? `<p style="color:#8a9bbf;font-size:0.85rem;margin:0.6rem 0">${j.description.slice(0, 100)}...</p>` : ''}
           <div class="jl-footer">
-            <span></span>
+            <span>${matchBadge}</span>
             <button class="btn-primary btn-sm" onclick="applyToJob('${j.id}', '${j.title.replace(/'/g, '')}')">
               <i class="fas fa-paper-plane"></i> Apply
             </button>
           </div>
         </div>`;
     }).join('');
+
+    // Fetch match % for each job in parallel (only if user has a CV)
+    if (hasCv) {
+      data.jobs.forEach(j => {
+        fetch(`${API}/ai/match`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ job_id: j.id }) })
+          .then(r => r.json())
+          .then(d => {
+            const el = document.getElementById(`match-${j.id}`);
+            if (!el) return;
+            if (d.match_percentage != null) {
+              const pct = d.match_percentage;
+              const col = pct >= 70 ? '#27c93f' : pct >= 50 ? '#f7944d' : '#5b6f94';
+              el.innerHTML = `<i class="fas fa-bullseye" style="color:${col}"></i> <strong style="color:${col}">${pct}%</strong> match`;
+            } else {
+              el.textContent = '';
+            }
+          }).catch(() => { const el = document.getElementById(`match-${j.id}`); if (el) el.textContent = ''; });
+      });
+    }
   } catch {
     grid.innerHTML = '<p style="color:#5b6f94">Cannot load jobs — make sure backend is running.</p>';
   }
@@ -118,14 +141,28 @@ async function loadJobs() {
 async function applyToJob(jobId, jobTitle) {
   if (!confirm(`Apply to "${jobTitle}"?`)) return;
   try {
+    // Get match % first (if user has a CV)
+    let matchPct = null;
+    if (localStorage.getItem('cvAnalyzed') === '1') {
+      try {
+        const mr = await fetch(`${API}/ai/match`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ job_id: jobId }) });
+        const md = await mr.json();
+        if (md.match_percentage != null) matchPct = md.match_percentage;
+      } catch { /* ignore */ }
+    }
+
     const res = await fetch(`${API}/applications`, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ job_id: jobId }),
+      body: JSON.stringify({ job_id: jobId, match_percentage: matchPct }),
     });
     const data = await res.json();
-    if (res.ok) alert(`Applied to "${jobTitle}" successfully!`);
-    else alert(data.error || 'Failed to apply.');
+    if (res.ok) {
+      const matchMsg = matchPct != null ? `\nYour match score: ${matchPct}% 🎯` : '';
+      alert(`Applied to "${jobTitle}" successfully!${matchMsg}`);
+    } else {
+      alert(data.error || 'Failed to apply.');
+    }
   } catch {
     alert('Cannot connect to server.');
   }
@@ -146,7 +183,12 @@ async function loadMyApplications() {
       container.innerHTML = '<p style="color:var(--muted);padding:1rem">No applications yet. Browse jobs and apply!</p>'; return;
     }
     const statusClass = s => s === 'shortlisted' ? 's-shortlisted' : s === 'rejected' ? 's-rejected' : s === 'pending' ? 's-new' : 's-interview';
-    container.innerHTML = data.applications.map(a => `
+    container.innerHTML = data.applications.map(a => {
+      const matchPct = a.match_percentage;
+      const matchBadge = matchPct != null
+        ? (() => { const col = matchPct >= 70 ? '#27c93f' : matchPct >= 50 ? '#f7944d' : '#5b6f94'; return `<span style="font-size:0.78rem;font-weight:600;color:${col}"><i class="fas fa-bullseye"></i> ${matchPct}% match</span>`; })()
+        : '';
+      return `
       <div class="job-listing-card" style="margin-bottom:1rem">
         <div class="jl-top">
           <div class="jl-company-icon" style="background:#f7944d">${(a.Jobs?.title||'?')[0].toUpperCase()}</div>
@@ -154,11 +196,15 @@ async function loadMyApplications() {
             <div class="jl-title">${a.Jobs?.title || 'Unknown Job'}</div>
             <div class="jl-company">${a.Jobs?.Companies?.name || 'Company'} · ${a.Jobs?.location || 'Remote'}</div>
           </div>
-          <span class="status-badge ${statusClass(a.status)}" style="margin-left:auto">${a.status}</span>
+          <div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:0.3rem;">
+            <span class="status-badge ${statusClass(a.status)}">${a.status}</span>
+            ${matchBadge}
+          </div>
         </div>
         <div class="jl-tags"><span class="jl-tag">${a.Jobs?.job_type || 'Full-time'}</span></div>
         <div style="font-size:0.78rem;color:var(--muted);margin-top:0.4rem">Applied ${new Date(a.created_at).toLocaleDateString()}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } catch { container.innerHTML = '<p style="color:var(--muted);padding:1rem">Cannot connect — backend offline.</p>'; }
 }
 
@@ -374,7 +420,7 @@ async function analyzeResume() {
     const profileScore = document.getElementById('profileScore');
     if (profileScore) profileScore.textContent = total + ' / 100';
 
-    // Save CV analysis to DB so company can see scores on applicants page
+    // Save CV analysis + raw text to DB (enables hiring probability matching)
     fetch(`${API}/cv/save`, {
       method: 'POST',
       headers: authHeaders(),
@@ -383,8 +429,10 @@ async function analyzeResume() {
         ai_summary: data.summary || '',
         red_flags: data.missing_keywords || [],
         file_name: file.name,
+        cv_text: cv_text,
       }),
     }).catch(() => {}); // fire and forget — don't block the UI
+    localStorage.setItem('cvAnalyzed', '1');
 
   } catch (e) {
     console.error(e);

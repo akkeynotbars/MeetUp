@@ -6,8 +6,16 @@ const { requireRole } = require('../middleware/role');
 
 // POST /api/cv/save — save or update the user's CV analysis result
 router.post('/save', requireAuth, requireRole('user'), async (req, res) => {
-  const { ai_score, ai_summary, red_flags, file_name } = req.body;
+  const { ai_score, ai_summary, red_flags, file_name, cv_text } = req.body;
   if (ai_score == null) return res.status(400).json({ error: 'ai_score is required' });
+
+  const payload = {
+    ai_score,
+    ai_summary,
+    red_flags: red_flags || [],
+    file_url: file_name || null,
+    cv_text: cv_text || null,
+  };
 
   // Check if user already has a CV record
   const { data: existing } = await supabase
@@ -18,20 +26,18 @@ router.post('/save', requireAuth, requireRole('user'), async (req, res) => {
 
   let result;
   if (existing) {
-    // Update existing record
     const { data, error } = await supabase
       .from('CVs')
-      .update({ ai_score, ai_summary, red_flags: red_flags || [], file_url: file_name || null, updated_at: new Date().toISOString() })
+      .update({ ...payload, updated_at: new Date().toISOString() })
       .eq('id', existing.id)
       .select()
       .single();
     if (error) { console.error('CV update error:', error); return res.status(500).json({ error: 'Failed to save CV' }); }
     result = data;
   } else {
-    // Insert new record
     const { data, error } = await supabase
       .from('CVs')
-      .insert({ user_id: req.user.id, ai_score, ai_summary, red_flags: red_flags || [], file_url: file_name || null })
+      .insert({ user_id: req.user.id, ...payload })
       .select()
       .single();
     if (error) { console.error('CV insert error:', error); return res.status(500).json({ error: 'Failed to save CV' }); }
