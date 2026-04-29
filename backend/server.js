@@ -4,7 +4,8 @@ const cors = require('cors');
 
 const authRoutes = require('./routes/auth');
 const jobRoutes = require('./routes/jobs');
-const applicationRoutes = require('./routes/applications'); 
+const applicationRoutes = require('./routes/applications');
+const cvRoutes = require('./routes/cvs');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
+app.use('/api/cvs', cvRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Meetup Backend API!');
