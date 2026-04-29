@@ -220,7 +220,7 @@
     try {
       const recaptchaToken = await grecaptcha.execute('6LfAnMUsAAAAAOxfBp9I5KCa10F7VA064716AlEZ', { action: 'signup' });
 
-      const res = await fetch('https://bc69-210-211-23-170.ngrok-free.app/api/auth/signup', {
+      const res = await fetch('http://localhost:3000/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' },
         body: JSON.stringify({ name, email, password, role: selectedRole, company_name, industry, recaptchaToken }),

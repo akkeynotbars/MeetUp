@@ -68,9 +68,9 @@ function logout() {
 // =====================
 // API HELPERS
 // =====================
-const API = 'https://bc69-210-211-23-170.ngrok-free.app/api';
+const API = 'http://localhost:3000/api';
 function authHeaders() {
-  return { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1', Authorization: `Bearer ${localStorage.getItem('token')}` };
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` };
 }
 
 // =====================
@@ -80,7 +80,7 @@ async function loadJobs() {
   const grid = document.getElementById('jobListingsGrid');
   if (!grid) return;
   try {
-    const res = await fetch(`${API}/jobs`, { headers: { 'ngrok-skip-browser-warning': '1' } });
+    const res = await fetch(`${API}/jobs`);
     const data = await res.json();
     if (!data.jobs || data.jobs.length === 0) {
       grid.innerHTML = '<p style="color:#5b6f94">No active jobs yet.</p>';
