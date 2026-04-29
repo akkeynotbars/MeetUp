@@ -24,7 +24,25 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
   document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+  document.getElementById('logoutBtn')?.addEventListener('click', logout);
+
+  // Populate real user data on profile page
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (document.getElementById('profileName')) document.getElementById('profileName').textContent = user.name || '—';
+  if (document.getElementById('profileEmail')) document.getElementById('profileEmail').textContent = user.email || '—';
+  // Fallback company name = registered name until we have a /companies/my endpoint
+  if (document.getElementById('profileCompany')) document.getElementById('profileCompany').textContent = user.name || '—';
 });
+
+// =====================
+// LOGOUT
+// =====================
+function logout() {
+  if (!confirm('Are you sure you want to log out?')) return;
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '../LandingPage/login.html';
+}
 
 // =====================
 // API HELPERS
@@ -353,7 +371,10 @@ async function shortlistCandidate(id, name) {
     if (res.ok) {
       alert(`${name} has been shortlisted.`);
       const row = document.getElementById(`app-${id}`);
-      if (row) row.querySelector('[style*="background:rgba(91"]').textContent = 'shortlisted';
+      if (row) {
+        const badge = row.querySelector('.status-badge');
+        if (badge) { badge.textContent = 'shortlisted'; badge.className = 'status-badge s-shortlisted'; }
+      }
     } else {
       const d = await res.json();
       alert(d.error || 'Failed to shortlist.');
@@ -368,7 +389,10 @@ async function rejectCandidate(id, name) {
     if (res.ok) {
       alert(`${name} has been rejected.`);
       const row = document.getElementById(`app-${id}`);
-      if (row) row.querySelector('[style*="background:rgba(91"]').textContent = 'rejected';
+      if (row) {
+        const badge = row.querySelector('.status-badge');
+        if (badge) { badge.textContent = 'rejected'; badge.className = 'status-badge s-rejected'; }
+      }
     } else {
       const d = await res.json();
       alert(d.error || 'Failed to reject.');

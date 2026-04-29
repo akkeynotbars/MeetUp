@@ -24,14 +24,46 @@ function toggleTheme() {
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('themeToggleBtn')?.addEventListener('click', toggleTheme);
   document.getElementById('themeToggleHeader')?.addEventListener('click', toggleTheme);
+  document.getElementById('logoutBtn')?.addEventListener('click', logout);
 
-  // Populate name from logged-in user
+  // Populate real user data throughout the dashboard
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   if (user.name) {
     const cvName = document.getElementById('cvName');
     if (cvName) cvName.textContent = user.name;
   }
+  // Profile page
+  if (document.getElementById('profileName')) document.getElementById('profileName').textContent = user.name || '—';
+  if (document.getElementById('profileEmail')) document.getElementById('profileEmail').textContent = user.email || '—';
+  if (document.getElementById('profileRole')) document.getElementById('profileRole').textContent = user.role === 'user' ? 'Job Seeker' : 'Company';
+
+  // Load saved CV score if it exists
+  fetch(`${API}/cv/my`, { headers: authHeaders() })
+    .then(r => r.json())
+    .then(d => {
+      if (d.cv?.ai_score != null) {
+        const cvScoreNum = document.getElementById('cvScoreNum');
+        if (cvScoreNum) cvScoreNum.textContent = d.cv.ai_score;
+        const cvGrade = document.getElementById('cvGrade');
+        if (cvGrade) {
+          const s = d.cv.ai_score;
+          cvGrade.textContent = s >= 85 ? 'Senior' : s >= 70 ? 'Mid-Level' : s >= 50 ? 'Junior' : 'Entry-Level';
+        }
+        const profileScore = document.getElementById('profileScore');
+        if (profileScore) profileScore.textContent = d.cv.ai_score + ' / 100';
+      }
+    }).catch(() => {});
 });
+
+// =====================
+// LOGOUT
+// =====================
+function logout() {
+  if (!confirm('Are you sure you want to log out?')) return;
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = '../LandingPage/login.html';
+}
 
 // =====================
 // API HELPERS
@@ -337,6 +369,23 @@ async function analyzeResume() {
 
     document.getElementById('aiSummaryCard').style.display = 'block';
     document.getElementById('aiPlaceholder').style.display = 'none';
+
+    // Also update profileScore if on profile page
+    const profileScore = document.getElementById('profileScore');
+    if (profileScore) profileScore.textContent = total + ' / 100';
+
+    // Save CV analysis to DB so company can see scores on applicants page
+    fetch(`${API}/cv/save`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        ai_score: total,
+        ai_summary: data.summary || '',
+        red_flags: data.missing_keywords || [],
+        file_name: file.name,
+      }),
+    }).catch(() => {}); // fire and forget — don't block the UI
+
   } catch (e) {
     console.error(e);
     alert('Cannot connect to server.');

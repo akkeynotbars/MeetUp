@@ -36,6 +36,7 @@
         <div class="sidebar-divider"></div>
         <div class="sidebar-bottom">
           <button class="nav-item" id="themeToggleBtn" data-tooltip="Toggle Theme"><i class="fas fa-moon"></i></button>
+          <button class="nav-item" id="logoutBtn" data-tooltip="Logout" style="color:#f87171;"><i class="fas fa-sign-out-alt"></i></button>
         </div>
       </aside>
 
@@ -706,19 +707,27 @@
           <div class="stats-grid" style="grid-template-columns: repeat(2,1fr);">
             <div class="stat-card">
               <div class="stat-label"><i class="fas fa-user"></i> Name</div>
-              <div class="stat-number" style="font-size:1.8rem;">Kent Lencau</div>
+              <div class="stat-number" style="font-size:1.8rem;" id="profileName">—</div>
             </div>
             <div class="stat-card">
-              <div class="stat-label"><i class="fas fa-briefcase"></i> Role</div>
-              <div class="stat-number" style="font-size:1.6rem;">Frontend Dev</div>
+              <div class="stat-label"><i class="fas fa-shield-alt"></i> Role</div>
+              <div class="stat-number" style="font-size:1.6rem;" id="profileRole">—</div>
             </div>
           </div>
           <div class="recent-card" style="margin-top:1.5rem;">
             <div class="recent-header"><h3><i class="fas fa-info-circle"></i> Profile Info</h3></div>
             <ul class="activity-list">
-              <li class="activity-item"><span class="activity-desc">Email: kent@email.com</span></li>
-              <li class="activity-item"><span class="activity-desc">Experience: 2 Years</span></li>
-              <li class="activity-item"><span class="activity-desc">Location: Jakarta, Indonesia</span></li>
+              <li class="activity-item"><span class="activity-desc">Email: <span id="profileEmail">—</span></span></li>
+              <li class="activity-item"><span class="activity-desc">AI Resume Score: <span id="profileScore">Not analyzed yet</span></span></li>
+            </ul>
+          </div>
+          <div class="recent-card" style="margin-top:1rem;">
+            <div class="recent-header"><h3><i class="fas fa-sign-out-alt" style="color:#f87171;"></i> Account</h3></div>
+            <ul class="activity-list">
+              <li class="activity-item">
+                <span class="activity-desc">Sign out from MeetUp</span>
+                <button class="action-mini red" onclick="logout()">Logout</button>
+              </li>
             </ul>
           </div>
         </div>
