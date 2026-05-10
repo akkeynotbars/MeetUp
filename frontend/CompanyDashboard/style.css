@@ -43,7 +43,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   background: var(--bg);
   margin: 0;
   padding: 0;
@@ -215,7 +215,7 @@ body {
   border-radius: 10px;
   font-size: 0.76rem;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
@@ -832,11 +832,31 @@ body {
 }
 
 @media (max-width: 700px) {
-  .search-input { width: 160px; }
-  .search-input:focus { width: 200px; }
+  .search-input { width: 120px; }
+  .search-input:focus { width: 160px; }
   .stats-grid { grid-template-columns: 1fr; }
   .job-postings-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
+  .top-header { padding: 0.75rem 1rem; }
+  .page { padding: 1rem; }
+  .title-row { flex-direction: column; gap: 0.5rem; }
+  .page-header-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .two-col { grid-template-columns: 1fr; }
+  .extra-features { grid-template-columns: 1fr; }
+  .table-row { grid-template-columns: 1fr 1fr auto !important; gap: 0.5rem; }
+  .table-cell.muted:not(:last-child) { display: none; }
+  .messages-layout { grid-template-columns: 1fr; }
+  .messages-list { height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+@media (max-width: 480px) {
+  .sidebar { padding: 0.4rem 0.5rem; }
+  .nav-item { width: 36px; height: 36px; font-size: 0.9rem; }
+  .stat-number { font-size: 2rem; }
+  .page-header h1 { font-size: 1.4rem; }
+  .recent-card { padding: 1rem; }
+  .btn-primary, .btn-secondary { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+  .action-cell { flex-direction: column; gap: 0.3rem; }
 }
 
 /* =====================
@@ -860,7 +880,7 @@ body {
   padding: 0.75rem 1.6rem;
   font-weight: 700;
   font-size: 0.95rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -878,7 +898,7 @@ body {
   padding: 0.75rem 1.6rem;
   font-weight: 600;
   font-size: 0.95rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -921,7 +941,7 @@ body {
   border-radius: 16px;
   padding: 0.75rem 1rem;
   font-size: 0.95rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: var(--text);
   background: var(--surface2);
   transition: all 0.2s;
@@ -959,7 +979,7 @@ body {
   padding: 0.5rem 1.2rem;
   font-weight: 600;
   font-size: 0.88rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: var(--gray-cool);
   cursor: pointer;
   display: inline-flex;
@@ -1069,7 +1089,7 @@ body {
   padding: 0.35rem 0.9rem;
   font-size: 0.8rem;
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: var(--text);
   cursor: pointer;
   display: inline-flex;
@@ -1231,7 +1251,7 @@ body {
   border-radius: 30px;
   padding: 0.7rem 1.2rem;
   font-size: 0.9rem;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Nunito', sans-serif;
   color: var(--text);
   outline: none;
   background: var(--surface2);

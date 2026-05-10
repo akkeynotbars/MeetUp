@@ -8,7 +8,7 @@ const { requireRole } = require('../middleware/role');
 router.get('/', async (req, res) => {
   const { data, error } = await supabase
     .from('Jobs')
-    .select('*, Companies(name)')
+    .select('*, Companies(name, user_id)')
     .eq('status', 'active')
     .order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: 'Failed to fetch jobs' });

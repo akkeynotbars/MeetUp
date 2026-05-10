@@ -8,6 +8,7 @@ const applicantRoutes = require('./routes/applicants');
 const aiRoutes = require('./routes/ai');
 const applicationRoutes = require('./routes/applications');
 const cvRoutes = require('./routes/cv');
+const messageRoutes = require('./routes/messages');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.use('/api/applicants', applicantRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/cv', cvRoutes);
+app.use('/api/messages', messageRoutes);
 
 if (require.main === module) {
   app.listen(port, () => {

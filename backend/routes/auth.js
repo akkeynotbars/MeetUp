@@ -4,15 +4,22 @@ const supabase = require('../config/supabase');
 const { hashPassword, verifyPassword } = require('../utils/password');
 const { signToken } = require('../utils/jwt');
 const { requireAuth } = require('../middleware/auth');
+const { requireRole } = require('../middleware/role');
 
 async function verifyRecaptcha(token) {
-  const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `secret=${process.env.RECAPTCHA_SECRET}&response=${token}`,
-  });
-  const data = await res.json();
-  return data.success && data.score >= 0.5;
+  // Skip reCAPTCHA in development (no secret set or token is placeholder)
+  if (!process.env.RECAPTCHA_SECRET || process.env.NODE_ENV === 'development') return true;
+  try {
+    const res = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${process.env.RECAPTCHA_SECRET}&response=${token}`,
+    });
+    const data = await res.json();
+    return data.success && data.score >= 0.5;
+  } catch {
+    return true; // fail open if Google unreachable
+  }
 }
 
 // POST /api/auth/signup
@@ -101,6 +108,83 @@ router.get('/me', requireAuth, async (req, res) => {
 
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user });
+});
+
+// GET /api/auth/company — get current user's company row
+router.get('/company', requireAuth, async (req, res) => {
+  const { data: company } = await supabase
+    .from('Companies')
+    .select('id, name, industry')
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+  if (!company) return res.status(404).json({ error: 'Company not found' });
+  res.json({ company });
+});
+
+// PATCH /api/auth/change-password
+router.patch('/change-password', requireAuth, async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password) return res.status(400).json({ error: 'Both fields are required' });
+  if (new_password.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters' });
+
+  const { data: user } = await supabase.from('Users').select('password_hash').eq('id', req.user.id).maybeSingle();
+  if (!user) return res.status(404).json({ error: 'User not found' });
+
+  const valid = await verifyPassword(current_password, user.password_hash);
+  if (!valid) return res.status(401).json({ error: 'Current password is incorrect' });
+
+  const password_hash = await hashPassword(new_password);
+  const { error } = await supabase.from('Users').update({ password_hash }).eq('id', req.user.id);
+  if (error) return res.status(500).json({ error: 'Failed to update password' });
+
+  res.json({ message: 'Password updated successfully' });
+});
+
+// PATCH /api/auth/profile — update name (and any extra columns that exist)
+router.patch('/profile', requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (!name || !name.trim()) return res.status(400).json({ error: 'Name is required' });
+
+  const { data: user, error } = await supabase
+    .from('Users')
+    .update({ name: name.trim() })
+    .eq('id', req.user.id)
+    .select('id, name, email, role')
+    .single();
+
+  if (error) return res.status(500).json({ error: 'Failed to update profile' });
+  res.json({ user });
+});
+
+// PATCH /api/auth/company-profile — update company row + user name
+router.patch('/company-profile', requireAuth, requireRole('company'), async (req, res) => {
+  const { name, company_name, industry } = req.body;
+
+  if (name && name.trim()) {
+    await supabase.from('Users').update({ name: name.trim() }).eq('id', req.user.id);
+  }
+
+  const companyUpdates = {};
+  if (company_name && company_name.trim()) companyUpdates.name = company_name.trim();
+  if (industry && industry.trim()) companyUpdates.industry = industry.trim();
+
+  if (Object.keys(companyUpdates).length) {
+    await supabase.from('Companies').update(companyUpdates).eq('user_id', req.user.id);
+  }
+
+  const { data: user } = await supabase
+    .from('Users')
+    .select('id, name, email, role')
+    .eq('id', req.user.id)
+    .maybeSingle();
+
+  const { data: company } = await supabase
+    .from('Companies')
+    .select('id, name, industry')
+    .eq('user_id', req.user.id)
+    .maybeSingle();
+
+  res.json({ user, company });
 });
 
 module.exports = router;

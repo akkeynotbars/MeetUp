@@ -1,106 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MeetUp AI - Smart Recruitment</title>
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeetUp AI — Get Hired Faster With AI</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- NAVIGATION -->
-<nav>
-  <div class="logo"><i class="fas fa-people-arrows"></i> Meet<span>Up</span></div>
+<!-- ===== NAVIGATION ===== -->
+<nav id="mainNav">
+  <a href="#" class="logo"><i class="fas fa-bolt"></i> Meet<span>Up</span></a>
   <ul class="nav-links">
-    <li><a href="#home">Home</a></li>
-    <li><a href="#intro">About</a></li>
+    <li><a href="#how">How it works</a></li>
     <li><a href="#features">Features</a></li>
+    <li><a href="#stories">Stories</a></li>
     <li><a href="#partners">Partners</a></li>
   </ul>
   <div class="nav-auth">
     <button class="nav-theme-btn" id="landingThemeBtn" title="Toggle theme"><i class="fas fa-moon"></i></button>
     <a href="login.html" class="nav-login">Log In</a>
-    <a href="signup.html" class="nav-cta">Get Started <i class="fas fa-arrow-right"></i></a>
+    <a href="signup.html" class="nav-cta">Get Started Free <i class="fas fa-arrow-right"></i></a>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- ===== HERO ===== -->
 <section class="hero" id="home">
   <div class="hero-bg"></div>
 
-  <!-- LEFT: Scene -->
-  <div class="scene-wrap">
-    <div class="scene">
-      <div class="particles" id="particles"></div>
-
-      <!-- Floating laptop -->
-      <div class="laptop">
-        <div class="laptop-screen">
-          <div class="screen-content">
-            <div class="screen-topbar">
-              <span class="screen-dot red"></span>
-              <span class="screen-dot yellow"></span>
-              <span class="screen-dot green"></span>
-            </div>
-            <div class="screen-lines">
-              <div class="s-line"></div>
-              <div class="s-line"></div>
-              <div class="s-line"></div>
-              <div class="s-line accent"></div>
-              <div class="s-line"></div>
-              <div class="s-line short"></div>
-            </div>
-          </div>
-        </div>
-        <div class="laptop-base"></div>
-        <div class="laptop-shadow"></div>
+  <!-- Left: Copy -->
+  <div class="hero-content">
+    <div class="hero-badge"><i class="fas fa-bolt"></i> AI-Powered Recruitment Platform</div>
+    <h1 class="hero-title">Land Your Dream Job<br><em>10x Faster</em> With AI</h1>
+    <p class="hero-sub">
+      Upload your resume, get matched to perfect roles, practice with AI interviews,
+      and track every application — all in one platform built for modern job seekers.
+    </p>
+    <div class="hero-actions">
+      <a href="signup.html" class="btn-primary btn-lg">Start for Free <i class="fas fa-arrow-right"></i></a>
+      <a href="login.html" class="btn-ghost">Log In</a>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-avatars">
+        <div class="p-av" style="background:linear-gradient(135deg,#f7944d,#e07a30)">R</div>
+        <div class="p-av" style="background:linear-gradient(135deg,#4a9fd4,#2d7db5)">S</div>
+        <div class="p-av" style="background:linear-gradient(135deg,#4ade80,#16a34a)">K</div>
+        <div class="p-av" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">A</div>
+        <div class="p-av" style="background:linear-gradient(135deg,#f472b6,#db2777)">M</div>
       </div>
-
-      <!-- Orbiting icons -->
-      <div class="orbit">
-        <div class="orbit-icon o1" data-title="Resume AI" data-desc="Upload & analyze your resume instantly with AI scoring and improvement tips." onclick="showIconInfo(this)"><i class="fas fa-file-alt"></i></div>
-        <div class="orbit-icon o2" data-title="Smart Matching" data-desc="AI matches you with jobs based on skills, experience, and culture fit." onclick="showIconInfo(this)"><i class="fas fa-brain"></i></div>
-        <div class="orbit-icon o3" data-title="Job Market" data-desc="Browse thousands of curated job listings from top companies." onclick="showIconInfo(this)"><i class="fas fa-briefcase"></i></div>
-        <div class="orbit-icon o4" data-title="Skill Coaching" data-desc="Personalized learning paths to close your skill gaps and grow." onclick="showIconInfo(this)"><i class="fas fa-chart-line"></i></div>
-        <div class="orbit-icon o5" data-title="AI Interview" data-desc="Practice mock interviews with real-time feedback on your answers." onclick="showIconInfo(this)"><i class="fas fa-comments"></i></div>
-        <div class="orbit-icon o6" data-title="Grade Verification" data-desc="Verify your skill level with AI assessment and earn badges." onclick="showIconInfo(this)"><i class="fas fa-award"></i></div>
-      </div>
-      <!-- Icon info popup -->
-      <div class="icon-popup" id="iconPopup">
-        <div class="icon-popup-title" id="popupTitle"></div>
-        <div class="icon-popup-desc" id="popupDesc"></div>
-      </div>
+      <span>Join <strong>50,000+</strong> job seekers already on MeetUp</span>
     </div>
   </div>
 
-  <!-- RIGHT: Content -->
-  <div class="hero-right">
-    <div class="hero-badge"><i class="fas fa-bolt"></i> AI-Powered Recruitment</div>
-    <h1 class="hero-title">Find Your<br><em>Perfect Match</em><br>With AI</h1>
+  <!-- Right: Dashboard Mockup -->
+  <div class="hero-visual">
+    <div class="visual-glow"></div>
 
-    <div class="qa-stack" id="qaStack">
-      <div class="qa-card" id="card1">
-        <div class="qa-q"><span class="dot"></span>Upload Your Resume</div>
-        <div class="qa-a">AI instantly analyzes your skills, experience, and career trajectory to create a comprehensive professional profile.</div>
-        <span class="qa-tag">Resume AI</span>
+    <!-- Job matches card -->
+    <div class="mockup-main">
+      <div class="mockup-header">
+        <span class="mockup-title"><i class="fas fa-briefcase"></i> Job Matches</span>
+        <span class="badge-new">3 New</span>
       </div>
-      <div class="qa-card" id="card2">
-        <div class="qa-q"><span class="dot"></span>Get Matched Instantly</div>
-        <div class="qa-a">Our algorithm matches you with roles where you'll thrive — going beyond keywords to understand context and fit.<span class="typing-cursor"></span></div>
-        <span class="qa-tag">Smart Matching</span>
-      </div>
-      <div class="qa-card" id="card3">
-        <div class="qa-q"><span class="dot"></span>Ace Your Interview</div>
-        <div class="qa-a">Practice with an AI interviewer that gives real-time feedback on clarity, confidence, and relevance.</div>
-        <span class="qa-tag">Interview Coach</span>
+      <div class="mockup-jobs">
+        <div class="mockup-job">
+          <div class="mj-logo" style="background:linear-gradient(135deg,#4285f4,#0f62fe)">G</div>
+          <div class="mj-info">
+            <div class="mj-title">Frontend Developer</div>
+            <div class="mj-company">Google · Remote</div>
+          </div>
+          <div class="match-pill match-high">92%</div>
+        </div>
+        <div class="mockup-job">
+          <div class="mj-logo" style="background:linear-gradient(135deg,#00b14f,#00873c)">T</div>
+          <div class="mj-info">
+            <div class="mj-title">Product Manager</div>
+            <div class="mj-company">Tokopedia · Jakarta</div>
+          </div>
+          <div class="match-pill match-mid">78%</div>
+        </div>
+        <div class="mockup-job">
+          <div class="mj-logo" style="background:linear-gradient(135deg,#ee4d2d,#c73e24)">S</div>
+          <div class="mj-info">
+            <div class="mj-title">Data Analyst</div>
+            <div class="mj-company">Shopee · Remote</div>
+          </div>
+          <div class="match-pill match-high">85%</div>
+        </div>
       </div>
     </div>
 
-    <div class="hero-ctas">
-      <a href="signup.html" class="btn-primary">Start Practicing Free</a>
-      <a href="#features" class="btn-ghost">Explore Features <span class="arrow">→</span></a>
+    <!-- AI Score card -->
+    <div class="mockup-score">
+      <div class="score-left">
+        <div class="score-label"><i class="fas fa-robot"></i> AI Resume Score</div>
+        <div class="score-val">87<span>/100</span></div>
+      </div>
+      <div class="score-right">
+        <div class="score-bar"><div class="score-fill"></div></div>
+        <div class="score-tags">
+          <span class="stag">React</span>
+          <span class="stag">Node.js</span>
+          <span class="stag">SQL</span>
+          <span class="stag">+5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating notification -->
+    <div class="mockup-notif">
+      <i class="fas fa-calendar-check" style="color:#4ade80;font-size:1rem;"></i>
+      <div>
+        <div class="notif-title">Interview Scheduled!</div>
+        <div class="notif-sub">Google · Tomorrow 2:00 PM</div>
+      </div>
     </div>
   </div>
 
@@ -110,107 +125,211 @@
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- INTRO -->
-<section class="intro" id="intro">
-  <div class="intro-visual">
-    <div class="stat-grid">
-      <div class="stat-cell"><div class="stat-num">95%</div><div class="stat-lbl">Match Accuracy</div></div>
-      <div class="stat-cell"><div class="stat-num">10K+</div><div class="stat-lbl">Jobs Posted</div></div>
-      <div class="stat-cell"><div class="stat-num">3.5x</div><div class="stat-lbl">Faster Hiring</div></div>
-      <div class="stat-cell"><div class="stat-num">50K+</div><div class="stat-lbl">Active Users</div></div>
+<!-- ===== BRAND BAR ===== -->
+<div class="brand-bar">
+  <span class="brand-label">Talent from</span>
+  <div class="brand-track-wrap">
+    <div class="brand-track">
+      <span>Google</span><span>Tokopedia</span><span>Gojek</span><span>Shopee</span>
+      <span>Grab</span><span>Traveloka</span><span>Bukalapak</span><span>Tiket.com</span>
+      <span>Blibli</span><span>OVO</span>
+      <!-- Duplicate for seamless loop -->
+      <span>Google</span><span>Tokopedia</span><span>Gojek</span><span>Shopee</span>
+      <span>Grab</span><span>Traveloka</span><span>Bukalapak</span><span>Tiket.com</span>
+      <span>Blibli</span><span>OVO</span>
     </div>
   </div>
-  <div class="intro-content">
-    <div class="section-label">What We Do</div>
-    <h2 class="section-title">The Smartest Way to<br>Navigate Your Career</h2>
-    <p class="section-desc">
-      MeetUp brings together AI-powered resume analysis, intelligent job matching, verified skill assessments, and real-time interview coaching — all in one seamless platform designed for both job seekers and employers.
-    </p>
-    <div class="tag-row">
-      <span class="tag">Resume Analysis</span>
-      <span class="tag">AI Matching</span>
-      <span class="tag">Skill Verification</span>
-      <span class="tag">Interview Coach</span>
-      <span class="tag">Career Coaching</span>
+</div>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how" id="how">
+  <div class="section-header centered">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">From resume to offer<br>in three steps</h2>
+    <p class="section-desc">No complicated setup. Upload your CV and MeetUp handles the rest — AI-powered, end to end.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon"><i class="fas fa-file-upload"></i></div>
+      <h3>Upload Your CV</h3>
+      <p>Drop your resume and our AI instantly analyzes your skills, experience, and profile. You'll get a score, breakdown, and improvement tips in seconds.</p>
+      <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon"><i class="fas fa-brain"></i></div>
+      <h3>Get Smart Matches</h3>
+      <p>Browse jobs with live compatibility scores. Our algorithm shows exactly how well your profile fits each role — so you only apply where you'll shine.</p>
+      <div class="step-connector"><i class="fas fa-arrow-right"></i></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon"><i class="fas fa-trophy"></i></div>
+      <h3>Apply & Get Hired</h3>
+      <p>Apply in one click, practice with AI mock interviews, and manage all your applications — shortlisted, rejected, pending — from one clean dashboard.</p>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- FEATURES -->
+<!-- ===== FEATURES BENTO ===== -->
 <section class="features" id="features">
-  <div class="features-header">
-    <div class="section-label">Our Features</div>
-    <h2 class="section-title">Everything You Need<br>to Get Hired</h2>
+  <div class="section-header">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need<br>to get hired</h2>
     <p class="section-desc">Eight AI-powered modules working together to give you an unfair advantage in the job market.</p>
   </div>
 
-  <div class="features-grid">
-    <div class="feat-card large" style="background: linear-gradient(135deg, #151018, #1a1020);">
-      <div class="feat-pill">Core</div>
-      <div class="feat-icon" style="background:rgba(247,148,77,0.15);"><i class="fas fa-robot"></i></div>
+  <div class="bento-grid">
+
+    <!-- Card 1: AI Resume — col 1-2, row 1-2 (big block) -->
+    <div class="bento-card bento-block">
+      <div class="bento-icon" style="background:rgba(247,148,77,0.12);color:#f7944d"><i class="fas fa-robot"></i></div>
+      <div class="bento-pill">Core</div>
       <h3>AI Resume Analyzer</h3>
-      <p>Upload your resume and get instant, in-depth analysis. Our AI scores your resume, identifies skill gaps, and suggests powerful improvements — with ATS optimization built in.</p>
+      <p>Scores your resume across 5 dimensions — technical skills, experience, education, soft skills, and structure — then suggests improvements and missing keywords.</p>
+      <div class="bento-resume-viz">
+        <div class="mini-bar-row">
+          <span>Technical</span>
+          <div class="mini-bar"><div class="mini-fill" style="width:80%"></div></div>
+          <span>80%</span>
+        </div>
+        <div class="mini-bar-row">
+          <span>Experience</span>
+          <div class="mini-bar"><div class="mini-fill" style="width:60%;background:#4a9fd4"></div></div>
+          <span>60%</span>
+        </div>
+        <div class="mini-bar-row">
+          <span>Education</span>
+          <div class="mini-bar"><div class="mini-fill" style="width:75%;background:#4ade80"></div></div>
+          <span>75%</span>
+        </div>
+        <div class="mini-bar-row">
+          <span>Soft Skills</span>
+          <div class="mini-bar"><div class="mini-fill" style="width:50%;background:#a78bfa"></div></div>
+          <span>50%</span>
+        </div>
+      </div>
     </div>
 
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(247,148,77,0.12);"><i class="fas fa-bullseye"></i></div>
+    <!-- Card 2: Smart Matching — col 3, row 1 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(74,222,128,0.12);color:#4ade80"><i class="fas fa-bullseye"></i></div>
       <h3>Smart Job Matching</h3>
-      <p>Go beyond keywords. Our algorithm understands context and culture to match you with roles where you'll genuinely thrive.</p>
+      <p>Goes beyond keywords. See a live % compatibility score for every job before you apply.</p>
+      <div class="bento-match-demo">
+        <div class="match-ring">92%</div>
+        <span>Match score</span>
+      </div>
     </div>
 
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(100,200,150,0.1);"><i class="fas fa-check-circle"></i></div>
-      <h3>Skill Verification</h3>
-      <p>Dynamic questions verify the skills you claim. Earn verified badges that boost your profile credibility with employers.</p>
-    </div>
-
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(160,120,220,0.1);"><i class="fas fa-comments"></i></div>
+    <!-- Card 3: Interview Coach — col 4, row 1 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(160,120,220,0.12);color:#a078dc"><i class="fas fa-comments"></i></div>
       <h3>AI Interview Coach</h3>
-      <p>Practice with an AI interviewer that adapts to your target role, gives live feedback, and tracks your improvement over time.</p>
+      <p>Practice with an AI interviewer in text or voice mode. Live feedback on clarity, confidence, and relevance.</p>
     </div>
 
-    <div class="feat-card large" style="background: linear-gradient(135deg, #1a1508, #12100a);">
-      <div class="feat-pill">For Companies</div>
-      <div class="feat-icon" style="background:rgba(247,148,77,0.1);"><i class="fas fa-building"></i></div>
-      <h3>Company Candidate Portal</h3>
-      <p>Post jobs, access a curated pool of verified candidates, review AI-generated assessments, and streamline your entire hiring pipeline — from application to offer letter — in one dashboard built for modern recruitment teams.</p>
+    <!-- Card 4: Grade Verification — col 3, row 2 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(220,100,120,0.12);color:#dc6478"><i class="fas fa-award"></i></div>
+      <h3>Grade Verification</h3>
+      <p>AI detects your seniority (Junior → Expert) and verifies it through dynamic Q&A. Earn a verified badge employers trust.</p>
     </div>
 
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(74,160,220,0.12);"><i class="fas fa-chart-line"></i></div>
+    <!-- Card 5: Skill Coaching — col 4, row 2 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(74,159,212,0.12);color:#4a9fd4"><i class="fas fa-graduation-cap"></i></div>
       <h3>Skill Coaching</h3>
-      <p>Personalized learning paths built from your skill gaps, with curated resources and milestone tracking.</p>
+      <p>Personalized learning paths from your CV's skill gaps — curated resources, progress tracking, and milestones.</p>
     </div>
 
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(220,100,80,0.1);"><i class="fas fa-bell"></i></div>
-      <h3>Smart Notifications</h3>
-      <p>Get notified when matching jobs open, when companies view your profile, or when it's time to follow up.</p>
+    <!-- Card 6: Company Portal — col 1-2, row 3 -->
+    <div class="bento-card bento-block bento-dark">
+      <div class="bento-icon" style="background:rgba(247,148,77,0.1);color:#f7944d"><i class="fas fa-building"></i></div>
+      <div class="bento-pill bento-pill-blue">For Companies</div>
+      <h3>Company Candidate Portal</h3>
+      <p>Post jobs, access AI-verified candidates, review assessments, and manage your entire hiring pipeline — from application to offer letter — in one unified dashboard.</p>
+      <div class="bento-company-stats">
+        <div class="c-stat"><span class="c-stat-n">10K+</span><span class="c-stat-l">Jobs Posted</span></div>
+        <div class="c-stat"><span class="c-stat-n">3.5x</span><span class="c-stat-l">Faster Hiring</span></div>
+        <div class="c-stat"><span class="c-stat-n">95%</span><span class="c-stat-l">Match Accuracy</span></div>
+      </div>
     </div>
 
-    <div class="feat-card">
-      <div class="feat-icon" style="background:rgba(80,200,180,0.1);"><i class="fas fa-chart-bar"></i></div>
+    <!-- Card 7: Analytics — col 3, row 3 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(247,148,77,0.1);color:#f7944d"><i class="fas fa-chart-bar"></i></div>
       <h3>Analytics Dashboard</h3>
-      <p>Understand your market positioning, track application outcomes, and visualize your career growth over time.</p>
+      <p>Visualize your job search progress, market positioning, and application outcomes over time.</p>
+    </div>
+
+    <!-- Card 8: Notifications — col 4, row 3 -->
+    <div class="bento-card">
+      <div class="bento-icon" style="background:rgba(220,100,80,0.1);color:#dc6450"><i class="fas fa-bell"></i></div>
+      <h3>Smart Notifications</h3>
+      <p>Know instantly when matching jobs open, when companies view your profile, or when to follow up.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials" id="stories">
+  <div class="section-header centered">
+    <div class="section-label">Success Stories</div>
+    <h2 class="section-title">Real people,<br>real results</h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p>"MeetUp's AI resume analyzer completely changed how I present myself. Got called back by 3 companies in the first week after following its suggestions."</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,#f7944d,#e07a30)">R</div>
+        <div>
+          <div class="testi-name">Reza Adriansyah</div>
+          <div class="testi-role">Software Engineer · Tokopedia</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card testi-featured">
+      <div class="testi-stars">★★★★★</div>
+      <p>"The AI interview coaching is insane. It flagged that my answers lacked structure and I was rushing. Fixed both things and got 3 job offers in 2 weeks. Not joking."</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,#4a9fd4,#2d7db5)">S</div>
+        <div>
+          <div class="testi-name">Sarah Kusuma</div>
+          <div class="testi-role">Product Manager · Gojek</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p>"The job match score is super accurate. I stopped applying to jobs I wasn't right for and focused only on 80%+ matches. Saved so much time and stress."</p>
+      <div class="testi-author">
+        <div class="testi-av" style="background:linear-gradient(135deg,#4ade80,#16a34a)">K</div>
+        <div>
+          <div class="testi-name">Kevin Tanaka</div>
+          <div class="testi-role">Frontend Developer · Shopee</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- PARTNERS -->
+<!-- ===== PARTNERS ===== -->
 <section class="partners" id="partners">
-  <div class="partners-header">
-    <div class="section-label" style="justify-content:center;">Our Partners</div>
-    <h2 class="section-title" style="text-align:center;">Trusted by Leading Companies</h2>
-    <p class="section-desc" style="margin:0 auto;text-align:center;">Organizations that believe in empowering the next generation of talent.</p>
+  <div class="section-header centered">
+    <div class="section-label">Partners</div>
+    <h2 class="section-title">Trusted by leading<br>companies</h2>
+    <p class="section-desc">Organizations that believe in empowering the next generation of talent.</p>
   </div>
-
   <div class="logos-row">
     <div class="logo-chip">Google</div>
     <div class="logo-chip">Tokopedia</div>
@@ -220,27 +339,46 @@
     <div class="logo-chip">Bukalapak</div>
     <div class="logo-chip">Traveloka</div>
   </div>
-
   <div class="partner-cta-box">
     <h3>Become a Partner</h3>
-    <p>Partner with MeetUp to connect with thousands of motivated, skilled job seekers and help shape the future of hiring.</p>
+    <p>Connect with thousands of motivated, skilled job seekers and help shape the future of hiring in Southeast Asia.</p>
     <a href="#" class="btn-outline">Apply for Partnership <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-content">
+    <div class="section-label" style="justify-content:center;">Ready?</div>
+    <h2 class="cta-title">Your next job is<br><em>waiting for you</em></h2>
+    <p class="cta-sub">Join 50,000+ job seekers using AI to find their perfect role. Free to get started — no credit card needed.</p>
+    <div class="cta-buttons">
+      <a href="signup.html" class="btn-primary btn-lg">Get Started Free</a>
+      <a href="login.html" class="btn-ghost-light">Already have an account →</a>
+    </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
-<!-- FOOTER -->
+<!-- ===== FOOTER ===== -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <span class="logo"><i class="fas fa-people-arrows"></i> Meet<span>Up</span></span>
+      <span class="logo"><i class="fas fa-bolt"></i> Meet<span>Up</span></span>
       <p>AI-powered recruitment platform connecting talented individuals with their ideal opportunities.</p>
+      <div class="social-row">
+        <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+      </div>
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
       <ul>
-        <li><a href="#">Job Seekers</a></li>
+        <li><a href="#">For Job Seekers</a></li>
         <li><a href="#">For Companies</a></li>
         <li><a href="#">Skill Assessments</a></li>
         <li><a href="#">Interview Prep</a></li>
@@ -267,12 +405,7 @@
   </div>
   <div class="footer-bottom">
     <span>&copy; 2026 MeetUp. All rights reserved.</span>
-    <div class="social-row">
-      <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
-      <a href="#" class="social-btn"><i class="fab fa-x-twitter"></i></a>
-      <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
-      <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
-    </div>
+    <span style="font-size:0.78rem;color:var(--muted)">Built with AI, for humans.</span>
   </div>
 </footer>
 

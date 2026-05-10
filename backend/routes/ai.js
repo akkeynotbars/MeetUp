@@ -222,4 +222,182 @@ router.post('/match', requireAuth, async (req, res) => {
   });
 });
 
+
+// =====================
+// GROQ HELPER
+// =====================
+async function groq(messages, maxTokens = 500, temperature = 0.3) {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.GROQ_API_KEY}` },
+    body: JSON.stringify({ model: 'llama-3.1-8b-instant', messages, max_tokens: maxTokens, temperature }),
+  });
+  if (!response.ok) throw new Error('Groq API error');
+  const data = await response.json();
+  const raw = data.choices?.[0]?.message?.content || '{}';
+  return JSON.parse(raw.replace(/```json\n?|```/g, '').trim());
+}
+
+// =====================
+// INTERVIEW (FR-13)
+// =====================
+
+// POST /api/ai/interview/start — get opening interview question
+router.post('/interview/start', requireAuth, async (req, res) => {
+  const { category } = req.body;
+  if (!category) return res.status(400).json({ error: 'category is required' });
+  try {
+    const result = await groq([{
+      role: 'system',
+      content: `You are a professional technical interviewer for a ${category} position. Ask a warm, focused opening question.
+Respond ONLY with valid JSON: {"question": "your opening interview question here"}`,
+    }], 200, 0.7);
+    res.json({ question: result.question || 'Tell me about yourself and your relevant experience.' });
+  } catch (e) {
+    console.error(e);
+    res.json({ question: `Tell me about yourself and your experience with ${category}.` });
+  }
+});
+
+// POST /api/ai/interview/answer — evaluate answer, return feedback + next question
+router.post('/interview/answer', requireAuth, async (req, res) => {
+  const { category, question, answer, question_number, total_questions } = req.body;
+  if (!question || !answer) return res.status(400).json({ error: 'question and answer are required' });
+  const isLast = question_number >= (total_questions || 5);
+  try {
+    const result = await groq([
+      {
+        role: 'system',
+        content: `You are a technical interviewer for a ${category} role. Evaluate the answer and ${isLast ? 'give a final summary — no next question.' : 'ask the next question on a different topic.'}
+Respond ONLY with valid JSON (no markdown):
+{
+  "feedback": {
+    "relevance": "Excellent|Good|Average|Needs Improvement",
+    "clarity": "Excellent|Good|Average|Needs Improvement",
+    "confidence": "Excellent|Good|Average|Needs Improvement",
+    "score": <40-100>,
+    "comment": "1-2 sentence honest feedback"
+  },
+  "next_question": ${isLast ? 'null' : '"next question string"'},
+  "is_final": ${isLast}
+}`,
+      },
+      { role: 'user', content: `Question: ${question}\n\nAnswer: ${answer}` },
+    ], 450, 0.3);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'AI service unavailable' });
+  }
+});
+
+// =====================
+// GRADE DETECTION & VERIFICATION (FR-14, FR-15)
+// =====================
+
+// POST /api/ai/grade/detect — detect grade from stored CV
+router.post('/grade/detect', requireAuth, async (req, res) => {
+  const supabase = require('../config/supabase');
+  const { data: cv } = await supabase.from('CVs').select('cv_text, ai_score').eq('user_id', req.user.id).maybeSingle();
+  if (!cv?.cv_text) return res.json({ grade: null, message: 'Upload and analyze your CV first.' });
+
+  // Deterministic fallback
+  const score = cv.ai_score || 0;
+  const fallbackGrade = score >= 85 ? 'Senior' : score >= 70 ? 'Mid-Level' : score >= 50 ? 'Junior' : 'Entry-Level';
+
+  try {
+    const result = await groq([
+      {
+        role: 'system',
+        content: `You are a career expert. Analyze this resume and determine the candidate's experience level.
+Respond ONLY with valid JSON:
+{"grade":"Entry-Level|Junior|Mid-Level|Senior","reasoning":"1-2 sentence explanation","years_experience":<number or null>,"key_signals":["signal1","signal2","signal3"]}`,
+      },
+      { role: 'user', content: cv.cv_text.slice(0, 3000) },
+    ], 300, 0.1);
+    res.json(result);
+  } catch (e) {
+    res.json({ grade: fallbackGrade, reasoning: `Based on your CV score of ${score}/100.`, years_experience: null, key_signals: [] });
+  }
+});
+
+// POST /api/ai/grade/quiz — generate 5 verification questions
+router.post('/grade/quiz', requireAuth, async (req, res) => {
+  const { grade } = req.body;
+  if (!grade) return res.status(400).json({ error: 'grade is required' });
+  const supabase = require('../config/supabase');
+  const { data: cv } = await supabase.from('CVs').select('cv_text').eq('user_id', req.user.id).maybeSingle();
+  const context = cv?.cv_text ? cv.cv_text.slice(0, 1500) : 'No CV provided.';
+  try {
+    const result = await groq([
+      {
+        role: 'system',
+        content: `Generate 5 technical verification questions for a ${grade} developer based on their CV. Test real depth, not surface knowledge.
+Respond ONLY with valid JSON: {"questions":["q1","q2","q3","q4","q5"]}`,
+      },
+      { role: 'user', content: context },
+    ], 500, 0.5);
+    res.json({ questions: result.questions || [] });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'AI service unavailable' });
+  }
+});
+
+// POST /api/ai/grade/verify — verify grade from quiz answers
+router.post('/grade/verify', requireAuth, async (req, res) => {
+  const { grade, questions, answers } = req.body;
+  if (!grade || !questions || !answers) return res.status(400).json({ error: 'grade, questions and answers are required' });
+  const qa = questions.map((q, i) => `Q${i + 1}: ${q}\nA: ${answers[i] || '(skipped)'}`).join('\n\n');
+  try {
+    const result = await groq([
+      {
+        role: 'system',
+        content: `You are a senior technical evaluator. Based on the quiz answers, confirm or adjust the candidate's grade.
+Grades: Entry-Level < Junior < Mid-Level < Senior
+Respond ONLY with valid JSON:
+{"confirmed_grade":"Entry-Level|Junior|Mid-Level|Senior","score":<0-100>,"feedback":"2-3 sentence assessment","strong_areas":["area1","area2"],"improvement_areas":["area1","area2"]}`,
+      },
+      { role: 'user', content: `Detected grade: ${grade}\n\n${qa}` },
+    ], 400, 0.2);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'AI service unavailable' });
+  }
+});
+
+// =====================
+// SKILL COACHING (FR-12)
+// =====================
+
+// POST /api/ai/coaching — personalized coaching from CV
+router.post('/coaching', requireAuth, async (req, res) => {
+  const supabase = require('../config/supabase');
+  const { data: cv } = await supabase.from('CVs').select('cv_text, ai_score').eq('user_id', req.user.id).maybeSingle();
+  if (!cv?.cv_text) return res.json({ message: 'Upload and analyze your CV first for personalized coaching.' });
+  try {
+    const result = await groq([
+      {
+        role: 'system',
+        content: `You are a friendly career coach. Based on this CV, identify skill gaps and give actionable advice.
+Respond ONLY with valid JSON:
+{
+  "skill_gaps":[{"skill":"name","priority":"high|medium|low","reason":"why it matters"}],
+  "tips":[{"title":"tip title","description":"2-sentence advice"}],
+  "resources":[{"name":"resource name","type":"Course|Book|Practice|Community","description":"brief description"}],
+  "weekly_plan":"2-3 sentence suggested plan"
+}
+(max 5 skill_gaps, 4 tips, 4 resources)`,
+      },
+      { role: 'user', content: cv.cv_text.slice(0, 3000) },
+    ], 800, 0.3);
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'AI service unavailable' });
+  }
+});
+
 module.exports = router;
+

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
@@ -54,10 +54,10 @@
               <i class="fas fa-moon"></i>
             </button>
             <div class="icon-btn" id="notifBtn">
-              <i class="fa-regular fa-bell"></i>
+              <i class="fas fa-bell"></i>
             </div>
             <div class="avatar" id="profileBtn">
-              <i class="fa-regular fa-user"></i>
+              <i class="fas fa-user"></i>
             </div>
           </div>
         </div>
@@ -67,28 +67,28 @@
           <div class="title-row">
             <div class="title-left">
               <h1>User Dashboard</h1>
-              <p><i class="fa-regular fa-chart-bar"></i> Overview of all recruitment activities</p>
+              <p><i class="fas fa-chart-bar"></i> Overview of all recruitment activities</p>
             </div>
-            <div class="date-badge"><i class="fa-regular fa-calendar"></i> Oct 10 – Nov 10, 2026</div>
+            <div class="date-badge" id="dashDateBadge"><i class="fas fa-calendar-alt"></i> —</div>
           </div>
 
           <!-- Stat Cards -->
           <div class="stats-grid">
             <div class="stat-card" onclick="showPage('applicationsPage')">
               <div class="stat-label"><i class="fas fa-paper-plane"></i> Applications Sent</div>
-              <div class="stat-number" data-target="4">0</div>
-            </div>
-            <div class="stat-card" onclick="showPage('interviewPage')">
-              <div class="stat-label"><i class="fas fa-calendar-check"></i> Interviews Scheduled</div>
-              <div class="stat-number" data-target="2">0</div>
+              <div class="stat-number" id="statApplications">—</div>
             </div>
             <div class="stat-card" onclick="showPage('resumePage')">
               <div class="stat-label"><i class="fas fa-chart-line"></i> AI Resume Score</div>
-              <div class="stat-number" data-target="85">0<span class="stat-unit">/100</span></div>
+              <div class="stat-number" id="statCvScore">0<span class="stat-unit">/100</span></div>
             </div>
             <div class="stat-card" onclick="showPage('applicationsPage')">
-              <div class="stat-label"><i class="fas fa-percent"></i> Hiring Probability</div>
-              <div class="stat-number" data-target="72">0<span class="stat-unit">%</span></div>
+              <div class="stat-label"><i class="fas fa-percent"></i> Avg Match Score</div>
+              <div class="stat-number" id="statAvgMatch">0<span class="stat-unit">%</span></div>
+            </div>
+            <div class="stat-card" onclick="showPage('jobsPage')">
+              <div class="stat-label"><i class="fas fa-briefcase"></i> Jobs Available</div>
+              <div class="stat-number" id="statJobsCount">—</div>
             </div>
           </div>
 
@@ -98,7 +98,7 @@
               <i class="fas fa-award" style="color:#ff7a18;font-size:1.4rem;"></i>
               <div>
                 <span class="grade-label">Your Status Grade</span>
-                <span class="grade-value">Mid-Level</span>
+                <span class="grade-value" id="dashGradeValue">—</span>
               </div>
             </div>
             <button class="btn-outline-sm" onclick="showPage('gradePage')"><i class="fas fa-shield-alt"></i> Verify Grade</button>
@@ -108,50 +108,15 @@
           <div class="two-col">
             <div class="recent-card">
               <div class="recent-header">
-                <h3><i class="fa-regular fa-clock"></i> Recent Activity</h3>
-                <a href="#">View all <i class="fa-regular fa-arrow-right"></i></a>
+                <h3><i class="fas fa-clock"></i> Recent Activity</h3>
+                <a href="#" onclick="showPage('applicationsPage');return false;">View all <i class="fas fa-arrow-right"></i></a>
               </div>
-              <ul class="activity-list">
-                <li class="activity-item">
-                  <span class="activity-desc">Applied to Frontend Developer at Google <span class="badge-active">Active</span></span>
-                  <span class="activity-time">2h ago</span>
-                </li>
-                <li class="activity-item">
-                  <span class="activity-desc">AI Resume Score improved to 85%</span>
-                  <span class="activity-time">5h ago</span>
-                </li>
-                <li class="activity-item">
-                  <span class="activity-desc">Interview scheduled with Tokopedia</span>
-                  <span class="activity-time">1d ago</span>
-                </li>
-                <li class="activity-item">
-                  <span class="activity-desc">New job match found: Data Analyst</span>
-                  <span class="activity-time">1d ago</span>
-                </li>
+              <ul class="activity-list" id="dashActivityList">
+                <li class="activity-item"><span class="activity-desc" style="color:var(--text-muted);">Loading...</span></li>
               </ul>
             </div>
-            <div class="job-cards-stack">
-              <div class="job-card">
-                <div class="job-title-row"><span class="job-title">Product Manager</span></div>
-                <div class="job-location"><i class="fas fa-briefcase"></i> Product · San Francisco, CA</div>
-                <div class="job-metrics">
-                  <div class="metric"><span class="metric-value">18</span><span class="metric-label">applicants</span></div>
-                  <div class="metric"><span class="metric-value">3</span><span class="metric-label">shortlisted</span></div>
-                  <a href="#" class="view-link" onclick="return false;">View <i class="fa-regular fa-arrow-right"></i></a>
-                </div>
-              </div>
-              <div class="job-card">
-                <div class="job-title-row">
-                  <span class="job-title">UX Designer</span>
-                  <span class="job-badge-active"><i class="fas fa-circle" style="font-size:0.45rem;margin-right:4px;color:#f15a24;"></i>Active</span>
-                </div>
-                <div class="job-location"><i class="fas fa-paint-brush"></i> Design · New York, NY</div>
-                <div class="job-metrics">
-                  <div class="metric"><span class="metric-value">—</span><span class="metric-label">applicants</span></div>
-                  <div class="metric"><span class="metric-value">—</span><span class="metric-label">shortlisted</span></div>
-                  <a href="#" class="view-link" onclick="return false;">View <i class="fa-regular fa-arrow-right"></i></a>
-                </div>
-              </div>
+            <div class="job-cards-stack" id="dashJobCards">
+              <div class="activity-item"><span style="color:var(--text-muted);">Loading jobs...</span></div>
             </div>
           </div>
 
@@ -159,7 +124,7 @@
           <div class="extra-features">
             <div class="chart-card">
               <div class="card-header">
-                <i class="fa-regular fa-chart-line"></i>
+                <i class="fas fa-chart-line"></i>
                 <h3>Application Trends</h3>
               </div>
               <div class="chart-container">
@@ -169,7 +134,7 @@
             </div>
             <div class="quick-actions-card">
               <div class="card-header">
-                <i class="fa-regular fa-bolt"></i>
+                <i class="fas fa-bolt"></i>
                 <h3>Quick Actions</h3>
               </div>
               <div class="quick-actions-grid">
@@ -179,18 +144,9 @@
                 <div class="action-btn" onclick="showPage('messagesPage')"><i class="fas fa-comment-dots"></i><span>Messages</span></div>
               </div>
               <div style="margin-top:1.2rem;">
-                <p style="font-weight:600;color:var(--deep-blue);margin-bottom:0.8rem;"><i class="fa-regular fa-clock" style="color:var(--orange-primary);margin-right:0.5rem;"></i>Upcoming Interviews</p>
-                <div class="interview-item">
-                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Today 14:00</span></div>
-                  <span class="interview-role">Frontend Developer · Google</span>
-                </div>
-                <div class="interview-item">
-                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Tomorrow 10:30</span></div>
-                  <span class="interview-role">Backend Engineer · Shopee</span>
-                </div>
-                <div class="interview-item">
-                  <div class="interview-info"><i class="fa-regular fa-calendar"></i><span class="interview-time">Nov 12 · 15:00</span></div>
-                  <span class="interview-role">Product Manager · Gojek</span>
+                <p style="font-weight:600;color:var(--deep-blue);margin-bottom:0.8rem;"><i class="fas fa-clock" style="color:var(--orange-primary);margin-right:0.5rem;"></i>Recent Applications</p>
+                <div id="dashRecentApps">
+                  <div class="interview-item"><span class="interview-role" style="color:var(--text-muted);">Loading...</span></div>
                 </div>
               </div>
             </div>
@@ -363,19 +319,8 @@
               </div>
               <div class="recent-card">
                 <div class="recent-header"><h3><i class="fas fa-history"></i> Interview History</h3></div>
-                <ul class="activity-list">
-                  <li class="activity-item">
-                    <span class="activity-desc">Frontend Developer <span class="match-score high" style="font-size:0.7rem;">82/100</span></span>
-                    <span class="activity-time">2d ago</span>
-                  </li>
-                  <li class="activity-item">
-                    <span class="activity-desc">Software Engineer <span class="match-score mid" style="font-size:0.7rem;">68/100</span></span>
-                    <span class="activity-time">5d ago</span>
-                  </li>
-                  <li class="activity-item">
-                    <span class="activity-desc">Product Manager <span class="match-score high" style="font-size:0.7rem;">75/100</span></span>
-                    <span class="activity-time">1w ago</span>
-                  </li>
+                <ul class="activity-list" id="interviewHistoryList">
+                  <li class="activity-item" style="color:var(--muted);font-size:0.85rem">No sessions yet. Start a mock interview!</li>
                 </ul>
               </div>
             </div>
@@ -509,42 +454,14 @@
           </div>
           <div class="recent-card" style="margin-bottom:1.2rem;">
             <div class="recent-header"><h3><i class="fas fa-exclamation-circle"></i> Identified Skill Gaps</h3></div>
-            <div class="skill-gaps-row">
-              <span class="skill-gap-tag">TypeScript</span>
-              <span class="skill-gap-tag">Docker</span>
-              <span class="skill-gap-tag">CI/CD</span>
-              <span class="skill-gap-tag">Unit Testing</span>
-              <span class="skill-gap-tag">REST API Design</span>
+            <div class="skill-gaps-row" id="coachingGapsRow">
+              <span style="color:var(--muted);font-size:0.85rem"><i class="fas fa-spinner fa-spin"></i> Analyzing your CV...</span>
             </div>
           </div>
-          <div class="coaching-grid">
-            <div class="coaching-card">
-              <div class="coaching-icon"><i class="fab fa-js-square"></i></div>
-              <h3>TypeScript Fundamentals</h3>
-              <p>Master TypeScript types, interfaces, and integration with React projects.</p>
-              <div class="coaching-progress"><div class="progress-bar"><div class="progress-fill" style="width:35%;"></div></div><span>35%</span></div>
-              <button class="btn-primary btn-sm" style="width:100%;margin-top:0.8rem;" onclick="alert('Opening TypeScript module...')"><i class="fas fa-play"></i> Continue</button>
-            </div>
-            <div class="coaching-card">
-              <div class="coaching-icon"><i class="fab fa-docker"></i></div>
-              <h3>Docker & Containers</h3>
-              <p>Learn containerization, Dockerfiles, and deployment workflows.</p>
-              <div class="coaching-progress"><div class="progress-bar"><div class="progress-fill" style="width:10%;"></div></div><span>10%</span></div>
-              <button class="btn-primary btn-sm" style="width:100%;margin-top:0.8rem;" onclick="alert('Opening Docker module...')"><i class="fas fa-play"></i> Continue</button>
-            </div>
-            <div class="coaching-card">
-              <div class="coaching-icon"><i class="fas fa-vial"></i></div>
-              <h3>Unit Testing with Jest</h3>
-              <p>Write reliable tests for React components and JavaScript functions.</p>
-              <div class="coaching-progress"><div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div><span>0%</span></div>
-              <button class="btn-primary btn-sm" style="width:100%;margin-top:0.8rem;" onclick="alert('Starting Jest module...')"><i class="fas fa-play"></i> Start</button>
-            </div>
-            <div class="coaching-card">
-              <div class="coaching-icon"><i class="fas fa-plug"></i></div>
-              <h3>REST API Design</h3>
-              <p>Design scalable APIs, handle authentication, and follow best practices.</p>
-              <div class="coaching-progress"><div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div><span>0%</span></div>
-              <button class="btn-primary btn-sm" style="width:100%;margin-top:0.8rem;" onclick="alert('Starting REST API module...')"><i class="fas fa-play"></i> Start</button>
+          <div class="coaching-grid" id="coachingGrid">
+            <div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted)">
+              <i class="fas fa-spinner fa-spin fa-2x"></i>
+              <p style="margin-top:0.8rem">Loading personalized coaching advice...</p>
             </div>
           </div>
         </div>
@@ -558,27 +475,23 @@
           <div class="two-col">
             <!-- Grade Detection -->
             <div class="recent-card">
-              <div class="recent-header"><h3><i class="fas fa-search"></i> AI Grade Detection (FR-14)</h3></div>
+              <div class="recent-header"><h3><i class="fas fa-search"></i> AI Grade Detection</h3></div>
               <div class="grade-detection-card">
                 <div class="grade-circle">
-                  <span class="grade-letter">M</span>
-                  <span class="grade-text">Mid-Level</span>
+                  <span class="grade-letter" id="gradeDetectLetter"><i class="fas fa-spinner fa-spin" style="font-size:1rem"></i></span>
+                  <span class="grade-text" id="gradeDetectText">Detecting...</span>
                 </div>
                 <div class="grade-reasoning">
                   <p style="font-weight:600;margin-bottom:0.5rem;">AI Reasoning:</p>
-                  <ul class="grade-reasons">
-                    <li>2 years of professional experience in frontend development</li>
-                    <li>Solid skills in React and JavaScript frameworks</li>
-                    <li>BSc in Computer Science completed</li>
-                    <li>Limited leadership/mentoring experience</li>
-                    <li>Missing advanced skills (TypeScript, system design)</li>
+                  <ul class="grade-reasons" id="gradeReasonsList">
+                    <li style="color:var(--muted)">Analyzing your CV...</li>
                   </ul>
                 </div>
               </div>
             </div>
             <!-- Grade Verification Q&A -->
             <div class="recent-card">
-              <div class="recent-header"><h3><i class="fas fa-shield-alt"></i> Double Verification Q&A (FR-15)</h3></div>
+              <div class="recent-header"><h3><i class="fas fa-shield-alt"></i> Skill Verification Q&A</h3></div>
               <div id="verificationQuiz">
                 <p style="font-size:0.85rem;color:#888;margin-bottom:1rem;">Answer these questions to verify your detected grade. Questions are based on your resume content.</p>
                 <div class="quiz-question">
@@ -621,37 +534,10 @@
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Search conversations..." oninput="filterMessages(this.value)">
               </div>
-              <div class="msg-item active" onclick="selectConversation(this, 'Sarah Chen', 'HR Manager at TechFlow', 0)">
-                <div class="cand-avatar msg-avatar">SC</div>
-                <div class="msg-preview">
-                  <div class="msg-name">Sarah Chen</div>
-                  <div class="msg-snippet">We'd love to schedule your interview!</div>
+              <div id="msgConvList">
+                <div style="padding:1rem;color:var(--muted);text-align:center;font-size:0.85rem">
+                  <i class="fas fa-spinner fa-spin"></i> Loading conversations...
                 </div>
-                <div class="msg-meta"><span class="msg-time">1h ago</span><span class="msg-unread">2</span></div>
-              </div>
-              <div class="msg-item" onclick="selectConversation(this, 'Mike Johnson', 'Recruiter at DataCorp', 1)">
-                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">MJ</div>
-                <div class="msg-preview">
-                  <div class="msg-name">Mike Johnson</div>
-                  <div class="msg-snippet">Your application has been reviewed</div>
-                </div>
-                <div class="msg-meta"><span class="msg-time">3h ago</span></div>
-              </div>
-              <div class="msg-item" onclick="selectConversation(this, 'Rina Tanaka', 'CTO at CloudBase', 2)">
-                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#34d399,#059669)">RT</div>
-                <div class="msg-preview">
-                  <div class="msg-name">Rina Tanaka</div>
-                  <div class="msg-snippet">Can you share your GitHub profile?</div>
-                </div>
-                <div class="msg-meta"><span class="msg-time">1d ago</span><span class="msg-unread">1</span></div>
-              </div>
-              <div class="msg-item" onclick="selectConversation(this, 'Alex Rivera', 'Hiring Lead at DesignHub', 3)">
-                <div class="cand-avatar msg-avatar" style="background:linear-gradient(135deg,#f472b6,#db2777)">AR</div>
-                <div class="msg-preview">
-                  <div class="msg-name">Alex Rivera</div>
-                  <div class="msg-snippet">Thanks for your portfolio submission!</div>
-                </div>
-                <div class="msg-meta"><span class="msg-time">3d ago</span></div>
               </div>
             </div>
             <div class="messages-chat">
@@ -686,15 +572,58 @@
             <h1>Settings</h1>
             <p>Manage your account preferences</p>
           </div>
-          <div class="recent-card">
-            <div class="recent-header">
-              <h3><i class="fas fa-sliders-h"></i> Account Settings</h3>
+          <div class="two-col">
+            <!-- Change Password -->
+            <div class="recent-card">
+              <div class="recent-header"><h3><i class="fas fa-lock"></i> Change Password</h3></div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Current Password</label>
+                  <input type="password" class="form-input" id="pwCurrent" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                  <label>New Password</label>
+                  <input type="password" class="form-input" id="pwNew" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" class="form-input" id="pwConfirm" placeholder="••••••••">
+                </div>
+                <button class="btn-primary" style="margin-top:0.5rem;" onclick="changePassword()">
+                  <i class="fas fa-key"></i> Update Password
+                </button>
+              </div>
             </div>
-            <ul class="activity-list">
-              <li class="activity-item"><span class="activity-desc">Change Password</span><span class="activity-time">→</span></li>
-              <li class="activity-item"><span class="activity-desc">Update Email</span><span class="activity-time">→</span></li>
-              <li class="activity-item"><span class="activity-desc">Manage Notifications</span><span class="activity-time">→</span></li>
-            </ul>
+
+            <!-- Account info + danger zone -->
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-user-circle"></i> Account Info</h3></div>
+                <ul class="activity-list">
+                  <li class="activity-item">
+                    <span class="activity-desc"><i class="fas fa-envelope" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Email</span>
+                    <span class="activity-time" id="settingsEmailInfo">—</span>
+                  </li>
+                  <li class="activity-item">
+                    <span class="activity-desc"><i class="fas fa-shield-alt" style="color:var(--orange-primary);margin-right:0.5rem;"></i> Role</span>
+                    <span class="activity-time">Job Seeker</span>
+                  </li>
+                  <li class="activity-item" style="margin-top:0.5rem;">
+                    <span class="activity-desc">Edit name, bio, skills</span>
+                    <button class="action-mini" onclick="showPage('profilePage');populateProfileDisplay();">Go to Profile</button>
+                  </li>
+                </ul>
+              </div>
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-sign-out-alt" style="color:#f87171;"></i> Danger Zone</h3></div>
+                <ul class="activity-list">
+                  <li class="activity-item">
+                    <span class="activity-desc">Sign out from MeetUp</span>
+                    <button class="action-mini red" onclick="logout()">Logout</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -702,33 +631,73 @@
         <div id="profilePage" class="page">
           <div class="page-header">
             <h1>My Profile</h1>
-            <p>Your personal information</p>
+            <p>Edit your personal information</p>
           </div>
-          <div class="stats-grid" style="grid-template-columns: repeat(2,1fr);">
-            <div class="stat-card">
-              <div class="stat-label"><i class="fas fa-user"></i> Name</div>
-              <div class="stat-number" style="font-size:1.8rem;" id="profileName">—</div>
+
+          <div class="two-col">
+            <!-- Edit Form -->
+            <div class="recent-card">
+              <div class="recent-header"><h3><i class="fas fa-user-edit"></i> Edit Profile</h3></div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label>Full Name</label>
+                  <input type="text" class="form-input" id="editProfileName" placeholder="Your full name">
+                </div>
+                <div class="form-group">
+                  <label>Email <span style="color:var(--text-muted);font-size:0.8rem;">(read-only)</span></label>
+                  <input type="text" class="form-input" id="editProfileEmail" placeholder="your@email.com" disabled style="opacity:0.6;cursor:not-allowed;">
+                </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="text" class="form-input" id="editProfilePhone" placeholder="+62 812 xxxx xxxx">
+                </div>
+                <div class="form-group">
+                  <label>Location</label>
+                  <input type="text" class="form-input" id="editProfileLocation" placeholder="e.g. Jakarta, Indonesia">
+                </div>
+                <div class="form-group">
+                  <label>Bio / About Me</label>
+                  <textarea class="form-input" id="editProfileBio" rows="3" placeholder="Tell employers a bit about yourself..." style="resize:vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Skills <span style="color:var(--text-muted);font-size:0.8rem;">(comma-separated)</span></label>
+                  <input type="text" class="form-input" id="editProfileSkills" placeholder="JavaScript, React, Python...">
+                </div>
+                <button class="btn-primary" style="margin-top:0.75rem;" onclick="saveUserProfile()">
+                  <i class="fas fa-save"></i> Save Changes
+                </button>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-label"><i class="fas fa-shield-alt"></i> Role</div>
-              <div class="stat-number" style="font-size:1.6rem;" id="profileRole">—</div>
+
+            <!-- Profile Summary -->
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div class="stat-card">
+                <div class="stat-label"><i class="fas fa-user"></i> Name</div>
+                <div class="stat-number" style="font-size:1.6rem;" id="profileName">—</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-label"><i class="fas fa-shield-alt"></i> Role</div>
+                <div class="stat-number" style="font-size:1.4rem;" id="profileRole">—</div>
+              </div>
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-info-circle"></i> Info</h3></div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="activity-desc">Email: <span id="profileEmail">—</span></span></li>
+                  <li class="activity-item"><span class="activity-desc">Phone: <span id="profilePhone">—</span></span></li>
+                  <li class="activity-item"><span class="activity-desc">Location: <span id="profileLocation">—</span></span></li>
+                  <li class="activity-item"><span class="activity-desc">AI Score: <span id="profileScore">Not analyzed</span></span></li>
+                </ul>
+              </div>
+              <div class="recent-card">
+                <div class="recent-header"><h3><i class="fas fa-sign-out-alt" style="color:#f87171;"></i> Account</h3></div>
+                <ul class="activity-list">
+                  <li class="activity-item">
+                    <span class="activity-desc">Sign out from MeetUp</span>
+                    <button class="action-mini red" onclick="logout()">Logout</button>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </div>
-          <div class="recent-card" style="margin-top:1.5rem;">
-            <div class="recent-header"><h3><i class="fas fa-info-circle"></i> Profile Info</h3></div>
-            <ul class="activity-list">
-              <li class="activity-item"><span class="activity-desc">Email: <span id="profileEmail">—</span></span></li>
-              <li class="activity-item"><span class="activity-desc">AI Resume Score: <span id="profileScore">Not analyzed yet</span></span></li>
-            </ul>
-          </div>
-          <div class="recent-card" style="margin-top:1rem;">
-            <div class="recent-header"><h3><i class="fas fa-sign-out-alt" style="color:#f87171;"></i> Account</h3></div>
-            <ul class="activity-list">
-              <li class="activity-item">
-                <span class="activity-desc">Sign out from MeetUp</span>
-                <button class="action-mini red" onclick="logout()">Logout</button>
-              </li>
-            </ul>
           </div>
         </div>
 
@@ -739,7 +708,7 @@
             <p>Your recent alerts and updates</p>
           </div>
           <div class="recent-card">
-            <div class="recent-header"><h3><i class="fa-regular fa-bell"></i> Recent</h3></div>
+            <div class="recent-header"><h3><i class="fas fa-bell"></i> Recent</h3></div>
             <ul class="activity-list">
               <li class="activity-item"><span class="activity-desc">New job match found</span><span class="activity-time">1h ago</span></li>
               <li class="activity-item"><span class="activity-desc">Interview scheduled tomorrow</span><span class="activity-time">3h ago</span></li>
@@ -752,6 +721,7 @@
     </div>
   </div>
 
+  <script src="../config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
