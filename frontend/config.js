@@ -8,4 +8,4 @@ const API_BASE_URL = (
   window.location.hostname === '127.0.0.1' ||
   window.location.hostname === '' // file:// opened directly
 ) ? 'http://localhost:3000/api'
-  : 'https://YOUR_RAILWAY_OR_RENDER_URL/api'; // ← replace this before deploying
+  : 'https://meetup-production-9287.up.railway.app/api';
