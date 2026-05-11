@@ -171,7 +171,13 @@
     btn.style.opacity = '0.7';
 
     try {
-      const recaptchaToken = await grecaptcha.execute('6LfAnMUsAAAAAOxfBp9I5KCa10F7VA064716AlEZ', { action: 'login' });
+      let recaptchaToken = null;
+      try {
+        recaptchaToken = await Promise.race([
+          grecaptcha.execute('6LfAnMUsAAAAAOxfBp9I5KCa10F7VA064716AlEZ', { action: 'login' }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+        ]);
+      } catch { /* reCAPTCHA unavailable on this domain — proceed without it */ }
 
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
